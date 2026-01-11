@@ -8,7 +8,7 @@ echo "init shell"
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-sudo pacman -S --noconfirm --needed lsd bat nvim go
+sudo pacman -S --noconfirm --needed lsd bat nvim go base-devel cmake fzf luarocks
 
 if ! command -v zsh &>/dev/null; then
     echo -e "${YELLOW}Installing Zsh...${NC}"
