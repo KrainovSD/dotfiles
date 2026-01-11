@@ -8,9 +8,11 @@ echo "init shell"
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
+sudo pacman -S --noconfirm --needed lsd bat nvim go
+
 if ! command -v zsh &>/dev/null; then
     echo -e "${YELLOW}Installing Zsh...${NC}"
-    sudo pacman -S --needed zsh zsh-completions
+    sudo pacman -S --noconfirm --needed zsh zsh-completions
 fi
 
 if [ ! -d "$HOME/.oh-my-zsh" ]; then

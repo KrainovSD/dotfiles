@@ -1,0 +1,6 @@
+[config]
+std="lua54"
+
+[style]
+mixed_table = "off"
+
