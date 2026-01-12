@@ -1,15 +1,24 @@
 #!/bin/bash
 
 set -e
-echo "init shell"
+echo "start init"
 
 # RED='\033[0;31m'
 # GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-sudo pacman -S --noconfirm --needed lsd bat nvim go base-devel cmake fzf luarocks lua51 imagemagick
+# init packages
+PACKAGES="$HOME/.local/share/chezmoi/scripts/packages"
+mapfile -t packages_to_install < <(grep -v '^\s*#' "$PACKAGES" | grep -v '^\s*$')
 
+if [ ${#packages_to_install[@]} -eq 0 ]; then
+    echo "Нет пакетов для установки"
+    exit 0
+fi
+sudo pacman -S --noconfirm --needed "${packages_to_install[@]}"
+
+# init zsh
 if ! command -v zsh &>/dev/null; then
     echo -e "${YELLOW}Installing Zsh...${NC}"
     echo "n" | sudo pacman -S --noconfirm --needed zsh zsh-completions
@@ -36,4 +45,24 @@ if [ ! -d "$ZSH_PLUGINS/zsh-syntax-highlighting" ]; then
     git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_PLUGINS/zsh-syntax-highlighting"
 fi
 
-echo -e "finished init shell"
+# init nvm
+sudo pacman -S nvm
+
+grep -q "export NVM_DIR" ~/.zshrc || {
+    cat >>~/.zshrc <<'EOF'
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+EOF
+}
+
+# shellcheck source=/dev/null
+source /usr/share/nvm/init-nvm.sh
+# shellcheck source=/dev/null
+source zshrc
+nvm install 24.11.0
+nvm use 24.11.0
+npm install -g pnpm
+
+echo -e "finished init"

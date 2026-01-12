@@ -1,0 +1,118 @@
+# # before all
+# base
+# linux
+# linux-firmware
+# sudo
+# vim
+# ## wifi
+# iwd
+# git
+# git-lfs
+# openssh
+# chezmoi
+
+# core
+go
+lsd
+bat
+nvim
+base-devel
+cmake
+fzf
+luarocks
+lua51
+imagemagick
+ctags
+snappy
+bzip2
+zlib
+lz4
+zstd
+gflags
+gcc
+clang
+numactl
+
+# # hypr
+# hyprland
+## color picker
+# hyprpicker
+# hyprlock
+# hypridle
+
+
+
+# # graphics
+# ## wallpaper
+# swww
+# hyprcursor
+# qt5ct
+# qt5-wayland
+# qt6ct
+# kvantum
+# kvantum-qt5
+# xdg-desktop-portal-hyprland
+# nwg-look
+
+# tech
+libnewt
+## session manager
+uwsm
+## sudo auth agent
+polkit-kde-agent
+wl-clipboard
+## just funny trash
+cmatrix
+## pretty ls
+lsd
+## pretty cat
+bat
+## system info
+fastfetch
+bluez
+bluez-utils
+## screenshots
+grim
+## select viewport for screenshots
+slarp
+## video record
+wf-recorder
+ttf-0xproto-nerd
+pacman-contrib
+brightnessctl
+uv
+nvm
+
+# audio
+## driver
+pipewire
+## bluetooth
+pipewire-pulse
+pipewire-audio
+## manager
+wireplumber
+## switch audio inputs
+pavucontrol
+
+# # applications
+# ## file manager
+# thunar
+# tumbler
+# thunar-archive-plugin
+# thunar-media-tags-plugin
+# ## archive
+# file-roller
+# ## media viewer
+# mpv
+# firefox
+# keepassxs
+# mattermost-desktop
+# ## menu
+# wofi
+# kitty
+# waybar
+# code
+# networkmanager
+# ## notification UI
+# dunst
+
