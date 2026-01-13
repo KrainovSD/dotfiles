@@ -9,7 +9,7 @@ colored_echo() {
 # init nvm
 if ! command -v nvm &>/dev/null; then
     colored_echo "installing nvm ..."
-    sudo pacman -S nvm
+    sudo pacman -S --noconfirm nvm
     grep -q "export NVM_DIR" ~/.zshrc || {
         cat >>~/.zshrc <<'EOF'
 
@@ -20,9 +20,8 @@ EOF
     }
 
     # shellcheck source=/dev/null
-    . /usr/share/nvm/init-nvm.sh
-    # shellcheck source=/dev/null
-    source ~/.zshrc
+    source /usr/share/nvm/init-nvm.sh
+    zsh
     nvm install 24.11.0
     nvm use 24.11.0
     npm install -g pnpm
@@ -31,7 +30,7 @@ fi
 # init docker
 if ! command -v docker &>/dev/null; then
     colored_echo "installing docker ..."
-    sudo pacman -S docker
+    sudo pacman -S --noconfirm docker
     systemctl enable docker
     systemctl start docker
 fi
