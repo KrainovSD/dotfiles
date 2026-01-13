@@ -21,7 +21,7 @@ EOF
 
     # shellcheck source=/dev/null
     source /usr/share/nvm/init-nvm.sh
-    zsh
+    # zsh
     nvm install 24.11.0
     nvm use 24.11.0
     npm install -g pnpm
