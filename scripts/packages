@@ -32,6 +32,8 @@ gflags
 gcc
 clang
 numactl
+zsh
+zsh-completions
 
 # # hypr
 # hyprland

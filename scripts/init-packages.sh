@@ -13,9 +13,3 @@ if [ ${#packages_to_install[@]} -gt 0 ]; then
     colored_echo "installing packages..."
     sudo pacman -S --noconfirm --needed "${packages_to_install[@]}"
 fi
-
-# init zsh package
-if ! command -v zsh &>/dev/null; then
-    colored_echo "installing Zsh..."
-    sudo pacman -S --noconfirm --needed zsh zsh-completions
-fi
