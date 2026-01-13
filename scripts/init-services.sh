@@ -31,6 +31,6 @@ fi
 if ! command -v docker &>/dev/null; then
     colored_echo "installing docker ..."
     sudo pacman -S --noconfirm docker
-    systemctl enable docker
-    systemctl start docker
+    sudo systemctl enable docker
+    sudo systemctl start docker
 fi
