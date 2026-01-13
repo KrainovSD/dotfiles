@@ -9,7 +9,7 @@ colored_echo() {
 # init nvm
 if ! command -v nvm &>/dev/null; then
     colored_echo "installing nvm ..."
-    sudo pacman -S --noconfirm nvm
+    sudo pacman -S --noconfirm --needed nvm
     grep -q "export NVM_DIR" ~/.zshrc || {
         cat >>~/.zshrc <<'EOF'
 
@@ -30,7 +30,7 @@ fi
 # init docker
 if ! command -v docker &>/dev/null; then
     colored_echo "installing docker ..."
-    sudo pacman -S --noconfirm docker
+    sudo pacman -S --noconfirm --needed docker
     sudo systemctl enable docker
     sudo systemctl start docker
 fi

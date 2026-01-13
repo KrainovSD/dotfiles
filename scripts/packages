@@ -40,8 +40,6 @@ numactl
 # hyprlock
 # hypridle
 
-
-
 # # graphics
 # ## wallpaper
 # swww
@@ -53,6 +51,10 @@ numactl
 # kvantum-qt5
 # xdg-desktop-portal-hyprland
 # nwg-look
+# sddm
+# qt5‑graphicaleffects
+# qt5‑quickcontrols2
+# qt5‑svg
 
 # tech
 libnewt
@@ -81,6 +83,8 @@ ttf-0xproto-nerd
 pacman-contrib
 brightnessctl
 uv
+docker
+nvm
 
 # audio
 ## driver
@@ -114,4 +118,5 @@ pavucontrol
 # networkmanager
 # ## notification UI
 # dunst
+
 
