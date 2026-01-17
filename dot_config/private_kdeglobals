@@ -1,0 +1,12 @@
+[KDE]
+ShowDeleteCommand=false
+
+[General]
+TerminalApplication=kitty
+
+[KShortcutsDialog Settings]
+Dialog Size=600,480
+
+[PreviewSettings]
+EnableRemoteFolderThumbnail=false
+MaximumRemoteSize=0

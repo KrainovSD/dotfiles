@@ -49,14 +49,18 @@ zsh-completions
 # qt5ct
 # qt5-wayland
 # qt6ct
-# kvantum
-# kvantum-qt5
+# qt6-wayland
 # xdg-desktop-portal-hyprland
+# xdg-desktop-portal
+# xdg-desktop-portal-gtk
 # nwg-look
 # sddm
 # qt5‑graphicaleffects
 # qt5‑quickcontrols2
 # qt5‑svg
+# not installing
+# kvantum-qt5
+# kvantum
 
 # tech
 libnewt
@@ -87,6 +91,9 @@ brightnessctl
 uv
 docker
 nvm
+jq
+zellij
+k9s
 
 # audio
 ## driver
