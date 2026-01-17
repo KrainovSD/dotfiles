@@ -1,8 +1,179 @@
 # Install
 
+## Initial installation
+
+- disk partitioning and mounting required the four parts.
+
+1. EFI System (1, 1G, mkfs.fat -F 32)
+2. Linux Swap(19, 8G, mkswap)
+3. Boot (1G, mkfs.ext4)
+4. Root (30% >= 50G, mkfs.ext4)
+5. Home (mkfs.ext4)
+
+```bash
+fdisk - l
+# p - view list of parts, d - delete part, g - create gpt table, n - new part, t - change part type, w - write changes
+fdisk /dev/nvme0n1
+
+# if cryptsetup is not allowed
+modprobe dm-crypt
+modprobe dm-mod
+
+cryptsetup -v luksFormat --type luks2 --hash sha512 --key-size 512 /dev/root
+# optional parameter after /dev/home is key-file path
+cryptsetup -v luksFormat --type luks2 --hash sha512 --key-size 512 /dev/home
+cryptsetup open /dev/root root
+cryptsetup open /dev/home home
+
+mkfs.ext4 -L "ARCH_ROOT" /dev/mapper/root
+mkfs.ext4 -L "ARCH_HOME" /dev/mapper/home
+mkfs.ext4 /dev/boot
+mkswap /dev/swap
+mkfs.fat -F 32 /dev/EFI
+
+mount /dev/mapper/root /mnt
+mkdir -p /mnt/boot/efi
+mkdir -p /mnt/home
+mount /dev/mapper/home /mnt/home
+mount /dev/boot /mnt/boot
+mount /dev/EFI /mnt/boot/efi
+swapon /dev/swap
+pacstrap /mnt base linux linux-firmware sudo vim iwd git git-lfs openssh chezmoi
+# create table of file system
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
+
+ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+hwclock --systohc
+# uncomment ru_RU.UTF-8 and en-US.UTF-8
+vim /etc/locale.gen
+local-gen
+echo LANG=en_US.UTF-8 > /etc/locale.conf
+echo krainov > /etc/hostname
+passwd
+
+cat > /boot/efi/loader/loader.conf << 'EOF'
+default arch.conf
+timeout 4
+console-mode max
+editor no
+EOF
+# or LABEL
+# `sudo blkid` or `lsblk -f`- partition info for UUID
+# options root="UUID=7dacec9e-c4fd-4d5c-b076-e2e193c45ae9" rw - without encryption
+# cryptdevice=UUID=7dacec9e-c4fd-4d5c-b076-e2e193c45ae9:root root=/dev/mapper/root - not systemd
+cat > /boot/efi/loader/entries/arch.conf << 'EOF'
+title Arch Linux
+linux /vmlinuz-linux
+initrd /intel-ucode.img
+initrd /initramfs-linux.img
+options rd.luks.name=9dacec9e-c4fd-4d5c-b076-e2e193c45ae9=root root=/dev/mapper/root rw
+EOF
+cat > /boot/efi/loader/entries/arch-fallback.conf << 'EOF'
+title Arch Linux (fallback)
+linux /vmlinuz-linux
+initrd /initramfs-linux-fallback.img
+options rd.luks.name=9dacec9e-c4fd-4d5c-b076-e2e193c45ae9=root root=/dev/mapper/root rw
+EOF
+# or /etc/home-password if has a key-file
+car > /etc/crypttab << 'EOF'
+home         UUID=b8ad5c18-f445-495d-9095-c9ec4f9d2f37   none  timeout=180
+EOF
+
+
+# add encrypt to HOOK udev or systemd
+# HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)
+# HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)
+vim /etc/mkinitcpio
+
+mkinitcpio -p linux
+
+reboot
+pacman -Syu
+reboot
+```
+
+## Microcode
+
+```bash
+pacman -S --noconfirm --needed intel-ucode
+# initrd  /intel-ucode.img before other initrd
+vim /boot/loader/entries/arch.conf
+reboot
+# Example: current revision: XXX; update early from: XXXX
+dmesg | grep microcode
+# check version of microcode in cpu that current revision in each of cpu
+cat /proc/cpuinfo | grep microcode
+```
+
+## User
+
+```bash
+# %wheel ALL=(ALL:ALL) ALL
+vim /etc/sudoers
+# -m create home, -U create group as name
+useradd  -m -U -G wheel -s /usr/bin/zsh krainov
+passwd krainov
+
+```
+
+# Music
+
+```bash
+sudo pacman -S --noconfirm --needed pipewire pipewire-pulse pipewire-audio wireplumber
+systemctl --user enable --now wireplumber pipewire pipewire-pulse
+pactl info
+```
+
+# Language
+
+```bash
+loadkeys ru
+setfont cyr-sun16
+cat > /etc/vconsole.conf << 'EOF'
+KEYMAP=us
+FONT=cyr-sun16
+EOF
+```
+
 # Graphic
 
-- gtk theme [store](https://www.gnome-look.org/)
+## Session
+
+```bash
+cat > /usr/share/wayland-sessions/hyprland-uwsm.desktop << 'EOF'
+[Desktop Entry]
+Name=Hyprland (uwsm-managed)
+Comment=An intelligent dynamic tiling Wayland compositor
+Exec=uwsm start -e -D Hyprland hyprland.desktop
+TryExec=uwsm
+DesktopNames=Hyprland
+Type=Application
+EOF
+
+cat > /usr/share/wayland-sessions/hyprland.desktop << 'EOF'
+[Desktop Entry]
+Name=Hyprland
+Comment=An intelligent dynamic tiling Wayland compositor
+Exec=/usr/bin/start-hyprland
+Type=Application
+DesktopNames=Hyprland
+Keywords=tiling;wayland;compositor;
+EOF
+```
+
+## Background
+
+```bash
+sudo pacman -S --noconfirm --needed swww
+hyprctl dispatch exec swww-daemon
+swww img [path]
+```
+
+## Theme
+
+- themes in `/usr/share/themes`
+- cursors in `usr/share/icons` and apply through `hyprctl setcursor "[name] [size]"`
 
 # SDDM
 
@@ -10,7 +181,7 @@
 
 ```bash
 # install required packages
-sudo pacman -S --needed sddm qt5‑graphicaleffects qt5‑quickcontrols2 qt5‑svg
+sudo pacman -S --noconfirm --needed sddm qt5‑graphicaleffects qt5‑quickcontrols2 qt5‑svg
 # start system sddm daemon
 systemctl enabled sddm
 systemctl start sddm
@@ -31,7 +202,7 @@ chmod 655 ~/.config/sddm/sddm.conf
 - setting idle behaviour
 
 ```bash
-sudo pacman -S hypridle
+sudo pacman -S --noconfirm --needed hypridle
 systemctl --user enable hypridle.service
 systemctl --user start hypridle.service
 
@@ -48,7 +219,7 @@ systemctl restart systemd-logind
 - connect to wifi by your own hand
 
 ```bash
-sudo pacman -S iwd
+sudo pacman -S --noconfirm --needed iwd
 iwctl
 device list
 device wlan0 set-property Powered on
@@ -65,7 +236,7 @@ networkctl status wlan0
 - auto connect to wifi
 
 ```bash
-sudo pacman -S iwd
+sudo pacman -S --noconfirm --needed iwd
 systemctl enable iwd
 systemctl start iwd
 # if not permissions to cd
@@ -106,7 +277,7 @@ sudo -E vim /etc/systemd/resolved.conf
 - connect to bluetooth by your own hand
 
 ```bash
-sudo pacman -S bluez bluez-utils
+sudo pacman -S --noconfirm --needed bluez bluez-utils
 systemctl enable bluetooth.service
 systemctl start bluetooth.service
 
@@ -175,6 +346,21 @@ fc-list : family | sort -u
 
 ```
 
+# Packages
+
+- install `-S`
+- remove `-R`, with dependencies `-Rs`
+- search in local `-Qs`, in global `-Ss`
+- update system `-Syu`
+- install yay
+
+```bash
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+
+```
+
 # Developer tools
 
 ## Docker
@@ -182,7 +368,7 @@ fc-list : family | sort -u
 - start the docker service
 
 ```bash
-sudo pacman -S docker
+sudo pacman -S --noconfirm --needed docker
 systemctl enable docker
 systemctl start docker
 ```
@@ -195,6 +381,7 @@ systemctl start docker
 yay -S netbird
 sudo netbird service install
 sudo netbird service start
+# or NB_MANAGEMENT_URL env
 sudo netbird up --management-url [your_url]
 sudo netbird down
 ```
@@ -204,7 +391,7 @@ sudo netbird down
 - install and prepare nvm to work
 
 ```bash
-sudo pacman -S nvm
+sudo pacman -S --noconfirm --needed nvm
 
 grep -q "export NVM_DIR" ~/.zshrc || {
 cat >> ~/.zshrc << 'EOF'
@@ -236,3 +423,8 @@ yay: netbird
 - check free disk `df -h`
 - find bin file to exec `pacman -Qlq package | grep /usr/bin/`
 - unpack archive `tar -xf archive.tag.xz`
+- if has trouble with keyboard input `loadkeys us` and then check KEYMAP in `/etc/vconsole.conf`
+- check permission of file `stat -c "%a" [file]`
+- gtk theme [store](https://www.gnome-look.org/)
+- entry point to exit from uwsm session is `uwsm stop`
+- exit from login manager to terminal `Ctrl Alt F2`
