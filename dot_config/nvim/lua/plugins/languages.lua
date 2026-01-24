@@ -223,12 +223,18 @@ return {
       { "hrsh7th/nvim-cmp" },
       { "saadparwaiz1/cmp_luasnip" },
       { "L3MON4D3/LuaSnip" },
-      { "f3fora/cmp-spell" },
+      { "onsails/lspkind.nvim" },
+      -- { "f3fora/cmp-spell" },
     },
     config = function()
       local cmp = require("cmp")
-
+      local lspkind = require("lspkind")
       cmp.setup({
+        completion = {
+          max_height = math.floor(vim.o.lines * 0.3),
+          min_height = 5,
+          scrolloff = 2,
+        },
         snippet = {
           expand = function(args)
             require("luasnip").lsp_expand(args.body)
@@ -244,8 +250,50 @@ return {
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
           { name = "luasnip" },
-          { name = "spell" },
+          { name = "buffer" },
+          { name = "path" },
         }),
+        formatting = {
+          format = function(entry, vim_item)
+            vim_item = require("lspkind").cmp_format({
+              mode = "symbol_text",
+              maxwidth = 20,
+              ellipsis_char = "...",
+            })(entry, vim_item)
+
+            vim_item.menu = ({
+              nvim_lsp = "[LSP]",
+              luasnip = "[Snippet]",
+              buffer = "[Buffer]",
+              path = "[Path]",
+              nvim_lua = "[Lua]",
+            })[entry.source.name]
+
+            if entry.source.name == "nvim_lsp" then
+              local item = entry:get_completion_item()
+              if item.labelDetails and item.labelDetails.description then
+                vim_item.menu = vim_item.menu .. " " .. item.labelDetails.description
+              elseif item.detail then
+                vim_item.menu = vim_item.menu .. " " .. item.detail
+              end
+
+              if item.documentation then
+                local doc_text = ""
+                if type(item.documentation) == "string" then
+                  doc_text = item.documentation
+                elseif item.documentation.value then
+                  doc_text = item.documentation.value
+                end
+
+                if #doc_text > 0 and #doc_text < 30 then
+                  vim_item.menu = vim_item.menu .. " - " .. doc_text
+                end
+              end
+            end
+
+            return vim_item
+          end,
+        },
       })
       -- `/` cmdline setup.
       cmp.setup.cmdline("/", {
@@ -301,6 +349,8 @@ return {
           "helm",
           "gotmpl",
           "go",
+          "css",
+          "scss",
         },
         sync_install = true,
         auto_install = true,
