@@ -94,6 +94,7 @@ nvm
 jq
 zellij
 k9s
+dnsutils
 
 # audio
 ## driver

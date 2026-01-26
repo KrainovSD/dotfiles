@@ -6,9 +6,8 @@
 
 1. EFI System (1, 1G, mkfs.fat -F 32)
 2. Linux Swap(19, 8G, mkswap)
-3. Boot (1G, mkfs.ext4)
-4. Root (30% >= 50G, mkfs.ext4)
-5. Home (mkfs.ext4)
+3. Root (30% >= 50G, mkfs.ext4)
+4. Home (mkfs.ext4)
 
 ```bash
 fdisk - l
@@ -27,31 +26,29 @@ cryptsetup open /dev/home home
 
 mkfs.ext4 -L "ARCH_ROOT" /dev/mapper/root
 mkfs.ext4 -L "ARCH_HOME" /dev/mapper/home
-mkfs.ext4 /dev/boot
 mkswap /dev/swap
 mkfs.fat -F 32 /dev/EFI
 
 mount /dev/mapper/root /mnt
-mkdir -p /mnt/boot/efi
 mkdir -p /mnt/home
 mount /dev/mapper/home /mnt/home
-mount /dev/boot /mnt/boot
-mount /dev/EFI /mnt/boot/efi
+mount /dev/EFI /mnt/boot
 swapon /dev/swap
-pacstrap /mnt base linux linux-firmware sudo vim iwd git git-lfs openssh chezmoi
+pacstrap /mnt base linux linux-firmware sudo vim iwd git git-lfs openssh chezmoi dhcpcd
 # create table of file system
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 
 ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
 hwclock --systohc
-# uncomment ru_RU.UTF-8 and en-US.UTF-8
+# uncomment ru_RU.UTF-8 and en_US.UTF-8
 vim /etc/locale.gen
-local-gen
+locale-gen
 echo LANG=en_US.UTF-8 > /etc/locale.conf
 echo krainov > /etc/hostname
 passwd
 
+bootctl install
 cat > /boot/efi/loader/loader.conf << 'EOF'
 default arch.conf
 timeout 4
@@ -65,7 +62,7 @@ EOF
 cat > /boot/efi/loader/entries/arch.conf << 'EOF'
 title Arch Linux
 linux /vmlinuz-linux
-initrd /intel-ucode.img
+# initrd /intel-ucode.img
 initrd /initramfs-linux.img
 options rd.luks.name=9dacec9e-c4fd-4d5c-b076-e2e193c45ae9=root root=/dev/mapper/root rw
 EOF
@@ -76,7 +73,7 @@ initrd /initramfs-linux-fallback.img
 options rd.luks.name=9dacec9e-c4fd-4d5c-b076-e2e193c45ae9=root root=/dev/mapper/root rw
 EOF
 # or /etc/home-password if has a key-file
-car > /etc/crypttab << 'EOF'
+cat > /etc/crypttab << 'EOF'
 home         UUID=b8ad5c18-f445-495d-9095-c9ec4f9d2f37   none  timeout=180
 EOF
 
@@ -84,7 +81,15 @@ EOF
 # add encrypt to HOOK udev or systemd
 # HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)
 # HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)
-vim /etc/mkinitcpio
+vim /etc/mkinitcpio.conf
+
+loadkeys ru
+# or pacman -S terminus-font then setfont ter-120n or ter-132n
+setfont cyr-sun16
+cat > /etc/vconsole.conf << 'EOF'
+KEYMAP=us
+FONT=cyr-sun16
+EOF
 
 mkinitcpio -p linux
 
@@ -123,17 +128,6 @@ passwd krainov
 sudo pacman -S --noconfirm --needed pipewire pipewire-pulse pipewire-audio wireplumber
 systemctl --user enable --now wireplumber pipewire pipewire-pulse
 pactl info
-```
-
-# Language
-
-```bash
-loadkeys ru
-setfont cyr-sun16
-cat > /etc/vconsole.conf << 'EOF'
-KEYMAP=us
-FONT=cyr-sun16
-EOF
 ```
 
 # Graphic
@@ -264,7 +258,7 @@ EOF
 systemctl enable systemd-resolved
 systemctl start systemd-resolved
 
-ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolved.conf
 # iwctl device list for search correct name
 iwctl stations wlan0 show
 
@@ -428,3 +422,16 @@ yay: netbird
 - gtk theme [store](https://www.gnome-look.org/)
 - entry point to exit from uwsm session is `uwsm stop`
 - exit from login manager to terminal `Ctrl Alt F2`
+- if pacstrap install ended with trouble
+
+```bash
+# try to change mirror in /etc/pacman.d/mirrorlist to https://mirror.yandex.ru/archlinux/$repo/os/$arch
+rm -rf /var/cache/pacman/pkg/*
+rm -rf /var/lib/pacman/sync/*
+rm -rf /mnt/var/cache/pacman/pkg/* 2>/dev/null
+pacman-key --init
+pacman-key --populate archlinux
+pacman-key --refresh-keys
+pacman -Syyyy
+pacman -S archlinux-keyring
+```
