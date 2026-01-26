@@ -5,7 +5,7 @@ set -e
 colored_echo() {
     echo -e "\033[1;32m$*\033[0m"
 }
-# init packages
+
 PACKAGES="$HOME/.local/share/chezmoi/scripts/packages"
 mapfile -t packages_to_install < <(grep -v '^\s*#' "$PACKAGES" | grep -v '^\s*$')
 

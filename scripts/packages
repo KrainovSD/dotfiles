@@ -10,6 +10,7 @@
 # git-lfs
 # openssh
 # chezmoi
+# dhcpcd
 
 # core
 go
@@ -35,32 +36,29 @@ numactl
 zsh
 zsh-completions
 
-# # hypr
-# hyprland
-## color picker
-# hyprpicker
-# hyprlock
-# hypridle
+# hypr
+hyprland
+# color picker
+hyprpicker
+hyprlock
+hypridle
 
-# # graphics
-# ## wallpaper
-# swww
-# hyprcursor
-# qt5ct
-# qt5-wayland
-# qt6ct
-# qt6-wayland
-# xdg-desktop-portal-hyprland
-# xdg-desktop-portal
-# xdg-desktop-portal-gtk
-# nwg-look
-# sddm
-# qt5‑graphicaleffects
-# qt5‑quickcontrols2
-# qt5‑svg
-# not installing
-# kvantum-qt5
-# kvantum
+# graphics
+## wallpaper
+swww
+hyprcursor
+qt5ct
+qt5-wayland
+qt6ct
+qt6-wayland
+xdg-desktop-portal-hyprland
+xdg-desktop-portal
+xdg-desktop-portal-gtk
+nwg-look
+sddm
+qt5-graphicaleffects
+qt5-quickcontrols2
+qt5-svg
 
 # tech
 libnewt
@@ -107,26 +105,26 @@ wireplumber
 ## switch audio inputs
 pavucontrol
 
-# # applications
-# ## file manager
-# thunar
-# tumbler
-# thunar-archive-plugin
-# thunar-media-tags-plugin
-# ## archive
-# file-roller
-# ## media viewer
-# mpv
-# firefox
-# keepassxs
-# mattermost-desktop
-# ## menu
-# wofi
-# kitty
-# waybar
-# code
-# networkmanager
-# ## notification UI
-# dunst
+# applications
+## file manager
+thunar
+tumbler
+thunar-archive-plugin
+thunar-media-tags-plugin
+## archive
+file-roller
+## media viewer
+mpv
+firefox
+keepassxc
+mattermost-desktop
+## menu
+wofi
+kitty
+waybar
+code
+networkmanager
+## notification UI
+dunst
 
 

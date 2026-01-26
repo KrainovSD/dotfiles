@@ -22,9 +22,7 @@ fi
 ZSH_PLUGINS="$HOME/.oh-my-zsh/custom/plugins"
 if [ ! -d "$ZSH_PLUGINS/zsh-autosuggestions" ]; then
     colored_echo "installing zsh-autosuggestions..."
-    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_PLUGINS/
-
-"
+    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_PLUGINS/zsh-autosuggestions"
 fi
 
 if [ ! -d "$ZSH_PLUGINS/zsh-syntax-highlighting" ]; then
