@@ -6,6 +6,7 @@ local opts = { noremap = true, silent = true }
 -- vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, opts)
 -- vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 
+vim.keymap.set("n", "<C-s>", ":w <CR>", opts)
 -- moving
 vim.keymap.set("i", "jk", "<Esc>", opts)
 vim.keymap.set({ "n", "v" }, "J", "4j", opts)
