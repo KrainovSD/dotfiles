@@ -5,8 +5,8 @@ return {
     config = function()
       require("autoclose").setup({
         keys = {
-          ["("] = { escape = false, close = false, pair = "()" },
-          ["["] = { escape = false, close = false, pair = "[]" },
+          ["("] = { escape = false, close = true, pair = "()" },
+          ["["] = { escape = false, close = true, pair = "[]" },
           ["{"] = { escape = false, close = true, pair = "{}" },
 
           [">"] = { escape = true, close = false, pair = "<>" },
@@ -31,6 +31,27 @@ return {
           enable_rename = true,
           enable_close_on_slash = true,
         },
+      })
+    end,
+  },
+
+  -- clibboard ssh
+  {
+    "ojroques/vim-oscyank",
+    cond = function()
+      return vim.env.SSH_CONNECTION ~= nil or vim.env.SSH_CLIENT ~= nil or vim.env.SSH_TTY ~= nil
+    end,
+    config = function()
+      vim.api.nvim_create_autocmd("TextYankPost", {
+        pattern = "*",
+        desc = "Copy to system clipboard via OSC52",
+        callback = function()
+          local event = vim.v.event
+          if event.operator == "y" and (event.regname == "" or event.regname == "+" or event.regname == "*") then
+            local reg = event.regname == "" and '"' or event.regname
+            vim.cmd("OSCYankRegister " .. reg)
+          end
+        end,
       })
     end,
   },
@@ -271,10 +292,25 @@ return {
     end,
   },
 
+  {
+    "JoosepAlviste/nvim-ts-context-commentstring",
+    config = function()
+      require("ts_context_commentstring").setup({ enable_autocmd = false })
+    end,
+  },
+
   -- auto comment
   {
     "numToStr/Comment.nvim",
-    opts = {},
+    dependencies = {
+      "JoosepAlviste/nvim-ts-context-commentstring",
+    },
+    opts = {
+      -- pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+      pre_hook = function(ctx)
+        return require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook()(ctx)
+      end,
+    },
   },
 
   -- git last commit per line info, reset hunks, view hunk diff in line and file diff
@@ -405,6 +441,9 @@ return {
     },
     config = function()
       require("neo-tree").setup({
+        clipboard = {
+          sync = "universal",
+        },
         filesystem = {
           follow_current_file = {
             enabled = true,
@@ -456,6 +495,17 @@ return {
         },
       })
       telescope.load_extension("fzf")
+    end,
+  },
+
+  -- check npm package versions
+  {
+    "vuki656/package-info.nvim",
+    dependencies = {
+      { "MunifTanjim/nui.nvim" },
+    },
+    config = function()
+      require("package-info").setup()
     end,
   },
 }

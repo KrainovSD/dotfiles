@@ -7,6 +7,7 @@ local opts = { noremap = true, silent = true }
 -- vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 
 vim.keymap.set("n", "<C-s>", ":w <CR>", opts)
+vim.keymap.set("v", "p", "P", opts)
 -- moving
 vim.keymap.set("i", "jk", "<Esc>", opts)
 vim.keymap.set({ "n", "v" }, "J", "4j", opts)
@@ -61,6 +62,20 @@ vim.keymap.set("n", "<leader>dc", ":DiffviewClose<CR>", opts)
 vim.keymap.set("n", "<leader>dh", ":DiffviewFileHistory<CR>", opts)
 vim.keymap.set("n", "<leader>G", function()
   vim.cmd.Git()
+end, opts)
+
+-- npm versions
+vim.keymap.set({ "n" }, "<LEADER>nt", function()
+  require("package-info").toggle()
+end, opts)
+vim.keymap.set({ "n" }, "<LEADER>nu", function()
+  require("package-info").change_version()
+end, opts)
+vim.keymap.set({ "n" }, "<LEADER>nd", function()
+  require("package-info").delete()
+end, opts)
+vim.keymap.set({ "n" }, "<LEADER>ni", function()
+  require("package-info").install()
 end, opts)
 
 -- markdown
@@ -158,7 +173,10 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 nnoremap <C-j> <C-w>j
 
-nnoremap <Space> @q
+nnoremap c "_c
+vnoremap c "_c
+
+" nnoremap <Space> @q
 nnoremap <C-Space> ␛
 vnoremap <C-Space> ␛
 vnoremap <leader>e :!sh<CR>

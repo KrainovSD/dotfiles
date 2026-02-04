@@ -132,6 +132,8 @@ alias ls="lsd"
 alias cat="bat"
 alias vim="nvim"
 alias battery='cat /sys/class/power_supply/BAT*/capacity'
+alias dtable='docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
+alias dinfo='docker ps --format "{{.Names}}\n\tContainer ID: {{.ID}}\n\tCommand: {{.Command}}\n\tImage: {{.Image}}\n\tCreatedAt: {{.CreatedAt}}\n\tStatus: {{.Status}}\n\tPorts: {{.Ports}}"'
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -145,4 +147,5 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 
+export MY_LOCAL_IP=192.168.135.198
 export PATH=$PATH:$(go env GOPATH)/bin
