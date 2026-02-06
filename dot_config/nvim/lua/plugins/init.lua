@@ -472,6 +472,13 @@ return {
     end,
   },
 
+  {
+    "folke/trouble.nvim",
+    config = function()
+      require("trouble").setup({})
+    end,
+  },
+
   -- search
   {
     "nvim-telescope/telescope.nvim",
@@ -485,6 +492,16 @@ return {
     config = function()
       local telescope = require("telescope")
       telescope.setup({
+        defaults = {
+          mappings = {
+            i = {
+              ["<c-t>"] = require("trouble.sources.telescope").open,
+            },
+            n = {
+              ["<c-t>"] = require("trouble.sources.telescope").open,
+            },
+          },
+        },
         extensions = {
           fzf = {
             fuzzy = true,
@@ -505,7 +522,9 @@ return {
       { "MunifTanjim/nui.nvim" },
     },
     config = function()
-      require("package-info").setup()
+      require("package-info").setup({
+        autostart = false,
+      })
     end,
   },
 }

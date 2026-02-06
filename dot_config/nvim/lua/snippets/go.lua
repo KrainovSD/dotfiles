@@ -7,7 +7,7 @@ local fmt = require("luasnip.extras.fmt").fmt
 return {
   s(
     "wrap",
-    fmt('fmt.Errorf("{} %w", err)', {
+    fmt('fmt.Errorf("{} :%w", err)', {
       i(1, ""),
     })
   ),

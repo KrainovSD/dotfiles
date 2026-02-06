@@ -150,6 +150,7 @@ vim.keymap.set("n", "<leader>fq", ":Telescope quickfix<CR>", opts)
 -- lsp
 vim.keymap.set("n", "<leader>gb", "<C-o>", opts)
 vim.keymap.set("n", "<leader>gf", "<C-i>", opts)
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
 vim.keymap.set("n", "<leader>gd", ":lua vim.lsp.buf.definition()<CR>", opts)
 vim.keymap.set("n", "<leader>gi", ":lua vim.lsp.buf.implementation()<CR>", opts)
 vim.keymap.set("n", "<leader>gr", ":lua vim.lsp.buf.references()<CR>", opts)

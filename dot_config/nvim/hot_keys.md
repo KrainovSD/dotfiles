@@ -39,6 +39,7 @@ A-Arrow - buffer sizing
 <leader>fg - find files content
 <leader>fb - find files name in opened buffers
 <leader>fq - find quick fix
+<C-t> - open telescope result in buffer
 
 # LSP
 
