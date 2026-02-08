@@ -1,6 +1,5 @@
-return {
-  -- autoclose
-  {
+local function autoclose()
+  return {
     "m4xshen/autoclose.nvim",
     config = function()
       require("autoclose").setup({
@@ -20,23 +19,11 @@ return {
         },
       })
     end,
-  },
+  }
+end
 
-  {
-    "windwp/nvim-ts-autotag",
-    config = function()
-      require("nvim-ts-autotag").setup({
-        opts = {
-          enable_close = true,
-          enable_rename = true,
-          enable_close_on_slash = true,
-        },
-      })
-    end,
-  },
-
-  -- clibboard ssh
-  {
+local function clipboard_in_ssh()
+  return {
     "ojroques/vim-oscyank",
     cond = function()
       return vim.env.SSH_CONNECTION ~= nil or vim.env.SSH_CLIENT ~= nil or vim.env.SSH_TTY ~= nil
@@ -54,116 +41,136 @@ return {
         end,
       })
     end,
-  },
+  }
+end
 
-  -- spell checker
-  -- {
-  --   "lewis6991/spellsitter.nvim",
-  --   config = function()
-  --     require("spellsitter").setup({
-  --       enable = true,
-  --       debug = true,
-  --       additional_vim_regex_highlighting = false,
-  --     })
-  --     vim.cmd([[set spell]])
-  --     vim.cmd([[set spelllang=ru,en]])
-  --   end,
-  -- },
+local function ts_autotag()
+  return {
+    "windwp/nvim-ts-autotag",
+    config = function()
+      require("nvim-ts-autotag").setup({
+        opts = {
+          enable_close = true,
+          enable_rename = true,
+          enable_close_on_slash = true,
+        },
+      })
+    end,
+  }
+end
 
-  -- mass change escape
-  {
+local function surround()
+  return {
     "kylechui/nvim-surround",
     version = "^3.0.0",
-    -- event = "VeryLazy",
+    event = "VeryLazy",
     config = function()
-      require("nvim-surround").setup({})
-    end,
-  },
-
-  -- hierarchy symantic navigation for line plugin
-  {
-    "SmiteshP/nvim-navic",
-    lazy = true,
-    init = function()
-      vim.g.navic_silence = true
-    end,
-    config = function()
-      require("nvim-navic").setup({
-        separator = " > ",
-        highlight = true,
-      })
-
-      vim.api.nvim_create_autocmd("LspAttach", {
-        group = vim.api.nvim_create_augroup("NavicAttach", { clear = true }),
-        callback = function(args)
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-          local bufnr = args.buf
-
-          if client and client.server_capabilities.documentSymbolProvider then
-            require("nvim-navic").attach(client, bufnr)
-          end
-        end,
+      require("nvim-surround").setup({
+        keymaps = {
+          insert = false,
+          insert_line = false,
+          normal = "<leader>as",
+          normal_cur = false,
+          normal_line = false,
+          normal_cur_line = false,
+          visual = "as",
+          visual_line = false,
+          delete = "ds",
+          change = "cs",
+        },
       })
     end,
-  },
+  }
+end
 
-  -- line info in first row
-  {
-    "b0o/incline.nvim",
-    config = function()
-      require("incline").setup({
-        highlight = {
-          groups = {
-            InclineNormal = {
-              guibg = "#3c3836", -- dark1 в gruvbox
-              guifg = "#ebdbb2", -- light1 в gruvbox
-            },
-            InclineNormalNC = {
-              guibg = "#504945", -- dark2 в gruvbox
-              guifg = "#a89984", -- light4 в gruvbox
+local function file_info_incline()
+  return {
+    -- hierarchy symantic navigation for line plugin
+    navic = {
+      "SmiteshP/nvim-navic",
+      lazy = true,
+      init = function()
+        vim.g.navic_silence = true
+      end,
+      config = function()
+        require("nvim-navic").setup({
+          separator = " > ",
+          highlight = true,
+        })
+
+        vim.api.nvim_create_autocmd("LspAttach", {
+          group = vim.api.nvim_create_augroup("NavicAttach", { clear = true }),
+          callback = function(args)
+            local client = vim.lsp.get_client_by_id(args.data.client_id)
+            local bufnr = args.buf
+
+            if client and client.server_capabilities.documentSymbolProvider then
+              require("nvim-navic").attach(client, bufnr)
+            end
+          end,
+        })
+      end,
+    },
+    -- line info in first row
+    incline = {
+      "b0o/incline.nvim",
+      config = function()
+        require("incline").setup({
+          highlight = {
+            groups = {
+              InclineNormal = {
+                guibg = "#3c3836", -- dark1 в gruvbox
+                guifg = "#ebdbb2", -- light1 в gruvbox
+              },
+              InclineNormalNC = {
+                guibg = "#504945", -- dark2 в gruvbox
+                guifg = "#a89984", -- light4 в gruvbox
+              },
             },
           },
-        },
-        window = {
-          margin = { vertical = 0, horizontal = 1 },
-        },
-        hide = {
-          cursorline = true,
-        },
-        render = function(props)
-          local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-          if filename == "" then
-            filename = "[No Name]"
-          end
-          local icon, color = require("nvim-web-devicons").get_icon_color(filename)
-          local modified = vim.api.nvim_buf_get_option(props.buf, "modified") and " [+]" or ""
-          local readonly = vim.api.nvim_buf_get_option(props.buf, "readonly") and " [RO]" or ""
-          local response = {
-            { icon, guifg = color },
-            { " " },
-            { filename },
-            { modified },
-            { readonly },
-          }
-          local symantic_location = require("nvim-navic").get_data(props.buf) or {}
-          if props.focused then
-            for _, item in ipairs(symantic_location) do
-              table.insert(response, {
-                { " > ", group = "NavicSeparator" },
-                { item.icon, group = "NavicIcons" .. item.type },
-                { item.name, group = "NavicText" },
-              })
+          window = {
+            margin = { vertical = 0, horizontal = 1 },
+          },
+          hide = {
+            cursorline = true,
+          },
+          render = function(props)
+            local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
+            if filename == "" then
+              filename = "[No Name]"
             end
-          end
-          table.insert(response, " ")
-          return response
-        end,
-      })
-    end,
-    event = "VeryLazy",
-  },
+            local icon, color = require("nvim-web-devicons").get_icon_color(filename)
+            local modified = vim.api.nvim_buf_get_option(props.buf, "modified") and " [+]" or ""
+            local readonly = vim.api.nvim_buf_get_option(props.buf, "readonly") and " [RO]" or ""
+            local response = {
+              { icon, guifg = color },
+              { " " },
+              { filename },
+              { modified },
+              { readonly },
+            }
+            local symantic_location = require("nvim-navic").get_data(props.buf) or {}
+            if props.focused then
+              for _, item in ipairs(symantic_location) do
+                table.insert(response, {
+                  { " > ", group = "NavicSeparator" },
+                  { item.icon, group = "NavicIcons" .. item.type },
+                  { item.name, group = "NavicText" },
+                })
+              end
+            end
+            table.insert(response, " ")
+            return response
+          end,
+        })
+      end,
+      event = "VeryLazy",
+    },
+  }
+end
 
-  {
+local function fold_ufo()
+  return {
     "kevinhwang91/nvim-ufo",
     dependencies = { "kevinhwang91/promise-async" },
     config = function()
@@ -208,11 +215,40 @@ return {
         open_fold_hl_timeout = 150,
         close_fold_kinds_for_ft = { default = { "imports", "comment" } },
       })
-    end,
-  },
 
-  -- status line under buffers
-  {
+      vim.keymap.set("n", "zr", function()
+        local ufo = require("ufo")
+        ufo.closeFoldsWith(1)
+      end)
+      vim.keymap.set("n", "zo", function()
+        local ufo = require("ufo")
+        ufo.openAllFolds()
+      end)
+      vim.keymap.set("n", "zc", function()
+        local ufo = require("ufo")
+        ufo.closeAllFolds()
+      end)
+      vim.keymap.set("n", "z", function()
+        local ufo = require("ufo")
+        local winid = ufo.peekFoldedLinesUnderCursor()
+        if winid then
+          vim.api.nvim_win_close(winid, true)
+        end
+        vim.cmd("normal! za")
+      end)
+      vim.keymap.set("n", "Z", function()
+        local ufo = require("ufo")
+        local winid = ufo.peekFoldedLinesUnderCursor()
+        if not winid then
+          vim.lsp.buf.hover()
+        end
+      end)
+    end,
+  }
+end
+
+local function status_line()
+  return {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
@@ -246,190 +282,271 @@ return {
         extensions = { "neo-tree" },
       })
     end,
-  },
+  }
+end
 
-  -- todo highlight
-  {
+local function todo_comments()
+  return {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {},
-  },
+  }
+end
 
-  -- check nvim perfomance on startup
-  {
+local function check_startup_performance()
+  return {
     "dstein64/vim-startuptime",
-  },
+  }
+end
 
-  -- terminal
-  {
+local function terminal()
+  return {
     "akinsho/toggleterm.nvim",
     version = "*",
     config = function()
       require("toggleterm").setup({})
+      vim.keymap.set({ "n", "t" }, "<leader>sh", "<cmd>ToggleTerm<CR>")
     end,
-  },
+  }
+end
 
-  -- tagbar with variables, methods, funcs
-  {
-    "preservim/tagbar",
-  },
+local function tagbar()
+  -- vim.keymap.set("n", "<leader>tg", ":Tagbar toggle<CR>", opts)
+  -- return {
+  --   "preservim/tagbar",
+  -- }
 
-  -- tagbar with variables, method, funcs with lsp
-  {
+  return {
     "stevearc/aerial.nvim",
     opts = {},
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
     },
-  },
+    config = function()
+      require("aerial").setup({})
+      vim.keymap.set("n", "<leader>at", "<cmd>AerialNavToggle<CR>")
+      vim.keymap.set("n", "<leader>ft", function()
+        return require("aerial").snacks_picker()
+      end, { desc = "telescope help tags" })
+    end,
+  }
+end
 
-  -- split working, swap splits, move cursor in other buffers, resizing
-  {
+local function smart_splits()
+  return {
     "mrjones2014/smart-splits.nvim",
     config = function()
-      require("smart-splits").setup({})
-    end,
-  },
+      local sp = require("smart-splits")
+      sp.setup({})
+      vim.keymap.set({ "n", "t" }, "<A-Left>", sp.resize_left)
+      vim.keymap.set({ "n", "t" }, "<A-Right>", sp.resize_right)
+      vim.keymap.set({ "n", "t" }, "<A-Down>", sp.resize_down)
+      vim.keymap.set({ "n", "t" }, "<A-Up>", sp.resize_up)
 
-  {
-    "JoosepAlviste/nvim-ts-context-commentstring",
-    config = function()
-      require("ts_context_commentstring").setup({ enable_autocmd = false })
-    end,
-  },
+      vim.keymap.set({ "n", "t" }, "<leader>mh", sp.swap_buf_left)
+      vim.keymap.set({ "n", "t" }, "<leader>ml", sp.swap_buf_right)
+      vim.keymap.set({ "n", "t" }, "<leader>mj", sp.swap_buf_down)
+      vim.keymap.set({ "n", "t" }, "<leader>mk", sp.swap_buf_up)
 
-  -- auto comment
-  {
-    "numToStr/Comment.nvim",
-    dependencies = {
+      -- vim.keymap.set({ "n", "t" }, "<C-h>", sp.move_cursor_left)
+      -- vim.keymap.set({ "n", "t" }, "<C-l>", sp.move_cursor_right)
+      -- vim.keymap.set({ "n", "t" }, "<C-j>", sp.move_cursor_down)
+      -- vim.keymap.set({ "n", "t" }, "<C-k>", sp.move_cursor_up)
+    end,
+  }
+end
+
+local function auto_comment()
+  return {
+    tsx = {
       "JoosepAlviste/nvim-ts-context-commentstring",
-    },
-    opts = {
-      -- pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
-      pre_hook = function(ctx)
-        return require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook()(ctx)
+      config = function()
+        require("ts_context_commentstring").setup({ enable_autocmd = false })
       end,
     },
-  },
 
-  -- git last commit per line info, reset hunks, view hunk diff in line and file diff
-  {
-    "lewis6991/gitsigns.nvim",
-    config = function()
-      require("gitsigns").setup({
-        current_line_blame = true,
-        current_line_blame_opts = {
-          virt_text = true,
-          virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
-          delay = 500,
-          ignore_whitespace = false,
-          virt_text_priority = 100,
-          use_focus = true,
-        },
-      })
-    end,
-  },
-
-  -- git diff mode
-  {
-    "sindrets/diffview.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
+    core = {
+      "numToStr/Comment.nvim",
+      dependencies = {
+        "JoosepAlviste/nvim-ts-context-commentstring",
+      },
+      opts = {
+        -- pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+        pre_hook = function(ctx)
+          return require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook()(ctx)
+        end,
+      },
     },
-    config = function()
-      require("diffview").setup({
-        enhanced_diff_hl = true,
-        view = {
-          default = {
-            layout = "diff2_horizontal", -- или "diff2_vertical"
-          },
-          merge_tool = {
-            layout = "diff3_horizontal",
-          },
-        },
-      })
-    end,
-  },
+  }
+end
 
-  {
-    "tpope/vim-fugitive",
-    config = function() end,
-  },
+local function git()
+  return {
+    signs = {
+      "lewis6991/gitsigns.nvim",
+      config = function()
+        require("gitsigns").setup({
+          current_line_blame = true,
+          current_line_blame_opts = {
+            virt_text = true,
+            virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
+            delay = 500,
+            ignore_whitespace = false,
+            virt_text_priority = 100,
+            use_focus = true,
+          },
+        })
+        local gs = require("gitsigns")
+        vim.keymap.set("n", "<leader>dpl", gs.preview_hunk_inline)
+        vim.keymap.set("n", "<leader>dr", gs.reset_hunk)
+        vim.keymap.set("n", "<leader>dbv", gs.preview_hunk)
+      end,
+    },
 
-  -- multi cursor
-  {
+    diff = {
+      "sindrets/diffview.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+      },
+      config = function()
+        require("diffview").setup({
+          enhanced_diff_hl = true,
+          view = {
+            default = {
+              layout = "diff2_horizontal", -- или "diff2_vertical"
+            },
+            merge_tool = {
+              layout = "diff3_horizontal",
+            },
+          },
+        })
+        vim.keymap.set("n", "<leader>do", ":DiffviewOpen<CR>")
+        vim.keymap.set("n", "<leader>dc", ":DiffviewClose<CR>")
+        vim.keymap.set("n", "<leader>dh", ":DiffviewFileHistory<CR>")
+      end,
+    },
+
+    git = {
+      "tpope/vim-fugitive",
+      config = function()
+        vim.keymap.set("n", "<leader>G", function()
+          vim.cmd.Git()
+        end)
+      end,
+    },
+  }
+end
+
+local function multicursor()
+  return {
     "mg979/vim-visual-multi",
     config = function()
-      vim.g.VM_maps["Find Under"] = "<C-d>"
-      vim.g.VM_maps["Find Subword Under"] = "<C-d>"
-      vim.g.VM_maps["Select Cursor Down"] = "<C-j>"
+      -- vim.g.VM_maps["Find Under"] = "<C-d>"
+      -- vim.g.VM_maps["Find Subword Under"] = "<C-d>"
+      -- vim.g.VM_maps["Select Cursor Down"] = "<C-j>"
+      vim.keymap.set("n", "<C-m>", "<Plug>(VM-Find-Under)")
+      vim.keymap.set("v", "<C-m>", "<Plug>(VM-Find-Subword-Under)")
+      vim.keymap.set("n", "<C-S-j>", "<Plug>(VM-Add-Cursor-Down)")
+      vim.keymap.set("n", "<C-S-K>", "<Plug>(VM-Add-Cursor-Up)")
     end,
-  },
+  }
+end
 
-  -- store sessions
-  {
+local function sessions()
+  return {
     "rmagatti/auto-session",
     lazy = false,
     config = function()
       require("auto-session").setup({})
     end,
-  },
+  }
+end
 
-  -- tabs line for opened buffers
-  {
-    "akinsho/bufferline.nvim",
-    version = "*",
-    dependencies = "nvim-tree/nvim-web-devicons",
-    config = function()
-      require("bufferline").setup({
-        options = {
-          diagnostics = "nvim_lsp",
-          offsets = {
-            {
-              filetype = "neo-tree",
-              text = "Neo-tree",
-              highlight = "Directory",
-              text_align = "left",
+local function tabs()
+  return {
+    tabs = {
+      "akinsho/bufferline.nvim",
+      version = "*",
+      dependencies = "nvim-tree/nvim-web-devicons",
+      config = function()
+        require("bufferline").setup({
+          options = {
+            diagnostics = "nvim_lsp",
+            offsets = {
+              {
+                filetype = "neo-tree",
+                text = "Neo-tree",
+                highlight = "Directory",
+                text_align = "left",
+              },
             },
           },
-        },
-      })
-    end,
-  },
+        })
+        local bufferline = require("bufferline")
+        vim.keymap.set("n", "<S-Tab>", function()
+          bufferline.cycle(-1)
+        end)
+        vim.keymap.set("n", "<Tab>", function()
+          bufferline.cycle(1)
+        end)
+        vim.keymap.set("n", "<A-,>", function()
+          bufferline.move(-1)
+        end)
+        vim.keymap.set("n", "<A-.>", function()
+          bufferline.move(1)
+        end)
+        vim.keymap.set("n", "<leader>bc", function()
+          bufferline.pick()
+        end)
+        vim.keymap.set("n", "<leader>bp", "<cmd>BufferLineTogglePin<CR>")
+        vim.keymap.set("n", "<leader>bq", function()
+          bufferline.close_others()
+        end)
+        for i = 1, 9 do
+          vim.keymap.set("n", string.format("<leader>%d", i), function()
+            bufferline.go_to(i)
+          end)
+        end
+      end,
+    },
+    close_tabs = {
+      "famiu/bufdelete.nvim",
+      config = function()
+        vim.keymap.set("n", "<leader>q", function()
+          require("bufdelete").bufdelete(0, false)
+        end)
+      end,
+    },
+  }
+end
 
-  -- delete buffer for tabs
-  {
-    "famiu/bufdelete.nvim",
-  },
-
-  -- markdown render
-  {
+local function markdown()
+  return {
     "MeanderingProgrammer/render-markdown.nvim",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
     },
-    opts = {},
-  },
-  -- image preview. not working for mewith neotree
-  {
+    config = function()
+      require("render-markdown").setup({})
+      vim.keymap.set("n", "<leader>md", require("render-markdown").toggle)
+    end,
+  }
+end
+
+local function universal_snacks()
+  return {
     "folke/snacks.nvim",
-    enabled = false,
+    enabled = true,
     opts = {
       image = {},
     },
-  },
+  }
+end
 
-  -- better image preview
-  -- {
-  --     "3rd/image.nvim",
-  --     enabled = true,
-  --     opts = {},
-  -- },
-
-  -- file tree
-  {
+local function file_tree()
+  return {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
     dependencies = {
@@ -468,55 +585,84 @@ return {
             },
           },
         },
+
+        vim.keymap.set("n", "<leader>tr", function()
+          require("neo-tree.command").execute({ toggle = true })
+        end),
       })
     end,
-  },
+  }
+end
 
-  {
-    "folke/trouble.nvim",
-    config = function()
-      require("trouble").setup({})
-    end,
-  },
-
-  -- search
-  {
-    "nvim-telescope/telescope.nvim",
-    dependencies = {
-      { "nvim-lua/plenary.nvim" },
-      {
-        "nvim-telescope/telescope-fzf-native.nvim",
-        build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --target install",
-      },
+local function telescope()
+  return {
+    trouble = {
+      "folke/trouble.nvim",
+      config = function()
+        require("trouble").setup({})
+      end,
     },
-    config = function()
-      local telescope = require("telescope")
-      telescope.setup({
-        defaults = {
-          mappings = {
-            i = {
-              ["<c-t>"] = require("trouble.sources.telescope").open,
-            },
-            n = {
-              ["<c-t>"] = require("trouble.sources.telescope").open,
-            },
-          },
-        },
-        extensions = {
-          fzf = {
-            fuzzy = true,
-            override_generic_sorter = true,
-            override_file_sorter = true,
-            case_mode = "smart_case",
-          },
-        },
-      })
-      telescope.load_extension("fzf")
-    end,
-  },
 
-  -- check npm package versions
-  {
+    telescope = {
+      "nvim-telescope/telescope.nvim",
+      dependencies = {
+        { "nvim-lua/plenary.nvim" },
+        {
+          "nvim-telescope/telescope-fzf-native.nvim",
+          build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --target install",
+        },
+      },
+      config = function()
+        local telescope = require("telescope")
+        telescope.setup({
+          defaults = {
+            mappings = {
+              i = {
+                ["<c-t>"] = require("trouble.sources.telescope").open,
+              },
+              n = {
+                ["<c-t>"] = require("trouble.sources.telescope").open,
+              },
+            },
+          },
+          extensions = {
+            fzf = {
+              fuzzy = true,
+              override_generic_sorter = true,
+              override_file_sorter = true,
+              case_mode = "smart_case",
+            },
+            -- aerial = {
+            --   col1_width = 4,
+            --   col2_width = 30,
+            --   format_symbol = function(symbol_path, filetype)
+            --     if filetype == "json" or filetype == "yaml" then
+            --       return table.concat(symbol_path, ".")
+            --     else
+            --       return symbol_path[#symbol_path]
+            --     end
+            --   end,
+            --   show_columns = "both",
+            -- },
+          },
+        })
+        telescope.load_extension("fzf")
+        local builtin = require("telescope.builtin")
+        vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Telescope find files" })
+        vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live grep" })
+        vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
+        vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
+        vim.keymap.set("n", "<leader>fc", builtin.commands, { desc = "Telescope help commands" })
+        vim.keymap.set("n", "<leader>fq", builtin.quickfix, { desc = "Telescope help quickfix" })
+        -- telescope.load_extension("aerial")
+        -- vim.keymap.set("n", "<leader>ft", telescope.extensions.aerial.aerial, { desc = "Telescope help language tags" })
+      end,
+    },
+  }
+end
+
+local function npm()
+  return {
     "vuki656/package-info.nvim",
     dependencies = {
       { "MunifTanjim/nui.nvim" },
@@ -525,6 +671,125 @@ return {
       require("package-info").setup({
         autostart = false,
       })
+      vim.keymap.set({ "n" }, "<leader>nt", function()
+        require("package-info").toggle()
+      end)
+      vim.keymap.set({ "n" }, "<leader>nu", function()
+        require("package-info").change_version()
+      end)
+      vim.keymap.set({ "n" }, "<leader>nd", function()
+        require("package-info").delete()
+      end)
+      vim.keymap.set({ "n" }, "<leader>ni", function()
+        require("package-info").install()
+      end)
     end,
-  },
+  }
+end
+
+local function flash_move()
+  return {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    opts = {
+      highlight = {
+        backdrop = true,
+        groups = {
+          match = "FlashMatch",
+          current = "FlashCurrent",
+          backdrop = "FlashBackdrop",
+          label = "FlashLabel",
+        },
+      },
+    },
+    keys = {
+      {
+        "s",
+        mode = { "n", "x", "o" },
+        function()
+          require("flash").jump()
+        end,
+        desc = "Flash",
+      },
+      {
+        "S",
+        mode = { "n", "x", "o" },
+        function()
+          require("flash").treesitter()
+        end,
+        desc = "Flash Treesitter",
+      },
+      {
+        "r",
+        mode = "o",
+        function()
+          require("flash").remote()
+        end,
+        desc = "Remote Flash",
+      },
+      {
+        "R",
+        mode = { "o", "x" },
+        function()
+          require("flash").treesitter_search()
+        end,
+        desc = "Treesitter Search",
+      },
+      {
+        "<c-s>",
+        mode = { "c" },
+        function()
+          require("flash").toggle()
+        end,
+        desc = "Toggle Flash Search",
+      },
+    },
+    config = function()
+      vim.api.nvim_command("hi clear FlashMatch")
+      vim.api.nvim_command("hi clear FlashCurrent")
+      vim.api.nvim_command("hi clear FlashLabel")
+
+      vim.api.nvim_command("hi FlashMatch guibg=#4A47A3 guifg=#B8B5FF")
+      vim.api.nvim_command("hi FlashCurrent guibg=#456268 guifg=#D0E8F2")
+      vim.api.nvim_command("hi FlashLabel guibg=#A25772 guifg=#EEF5FF")
+    end,
+  }
+end
+
+local file_info_plugins = file_info_incline()
+local auto_comment_plugins = auto_comment()
+local git_plugins = git()
+local tabs_plugins = tabs()
+local telescope_plugins = telescope()
+
+return {
+  autoclose(),
+  clipboard_in_ssh(),
+  ts_autotag(),
+  surround(),
+  file_info_plugins.navic,
+  file_info_plugins.incline,
+  fold_ufo(),
+  status_line(),
+  todo_comments(),
+  check_startup_performance(),
+  terminal(),
+  tagbar(),
+  smart_splits(),
+  auto_comment_plugins.tsx,
+  auto_comment_plugins.core,
+  git_plugins.signs,
+  git_plugins.diff,
+  git_plugins.git,
+  multicursor(),
+  sessions(),
+  tabs_plugins.tabs,
+  tabs_plugins.close_tabs,
+  markdown(),
+  universal_snacks(),
+  file_tree(),
+  telescope_plugins.trouble,
+  telescope_plugins.telescope,
+  npm(),
+  flash_move(),
 }

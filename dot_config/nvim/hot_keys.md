@@ -27,6 +27,8 @@ A-Arrow - buffer sizing
 
 <leader>bp - pin buffer tab
 <leader>bq - close all buffer except current
+<A-,> - move tab left
+<A-.> - move tab right
 
 # Tags
 
@@ -74,3 +76,16 @@ gcc - toggle comment in normal mode
 gc - toggle comment in visual mode
 gbc - toggle comment block in normal mode
 gb - toggle comment block in visual mode
+
+# Fast move
+
+s - to search
+S - to treeSitter object
+
+# Surround
+
+ds\* - delete surround
+cs\*\* - change surround from to
+asw\* - add surround
+cst - change both of tag
+dst - delete tag without children

@@ -3,6 +3,7 @@ return {
     "ellisonleao/gruvbox.nvim",
     config = function()
       require("gruvbox").setup({
+        terminal_colors = true,
         transparent_mode = true,
         italic = {
           strings = false,
@@ -10,10 +11,10 @@ return {
         },
         contrast = "hard",
       })
-      --            vim.cmd.colorscheme("gruvbox")
     end,
   },
-  {
-    "folke/tokyonight.nvim",
-  },
+  -- { "morhetz/gruvbox" },
+  -- { "folke/tokyonight.nvim" },
+  -- { "rebelot/kanagawa.nvim" },
+  -- { "sainnhe/everforest" },
 }

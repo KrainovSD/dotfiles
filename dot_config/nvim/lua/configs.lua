@@ -16,9 +16,11 @@ vim.cmd("filetype indent on")
 
 -- UI configuration
 vim.opt.number = true -- Show line numbers
+-- vim.opt.numberwidth = 2
 vim.opt.syntax = "on" -- Enable syntax highlighting
 vim.opt.relativenumber = true -- Show relative line numbers
 vim.opt.cursorline = true -- Highlight current line
+-- vim.opt.cursorlineopt = "number"  -- Highlight only number
 vim.opt.showmode = true -- Show current mode (insert, visual, etc.)
 vim.opt.showmatch = true -- Highlight matching brackets
 
@@ -26,6 +28,7 @@ vim.opt.showmatch = true -- Highlight matching brackets
 vim.opt.shiftwidth = 4 -- Number of spaces for each indentation level
 vim.opt.tabstop = 4 -- Number of spaces that a <Tab> counts for
 vim.opt.expandtab = true -- Use spaces instead of tabs
+vim.opt.smartindent = true -- Smart indent
 
 -- Search configuration
 vim.opt.incsearch = true -- Show matches as search is typed

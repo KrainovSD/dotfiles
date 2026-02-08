@@ -1,6 +1,5 @@
-return {
-
-  {
+local function lsp()
+  return {
     "neovim/nvim-lspconfig",
     dependencies = {
       "williamboman/mason.nvim",
@@ -77,11 +76,25 @@ return {
           },
         },
       })
+      vim.keymap.set("n", "<leader>gb", "<C-o>")
+      vim.keymap.set("n", "<leader>gf", "<C-i>")
+      vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action)
+      vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition)
+      vim.keymap.set("n", "<leader>gi", vim.lsp.buf.implementation)
+      vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references)
+      vim.keymap.set("n", "I", vim.lsp.buf.hover)
+      vim.keymap.set("n", "<leader>gn", vim.lsp.buf.rename)
+      vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
+      vim.keymap.set("n", "<leader>gpe", vim.diagnostic.goto_prev)
+      vim.keymap.set("n", "<leader>gne", vim.diagnostic.goto_next)
+      vim.keymap.set("n", "<leader>fe", vim.diagnostic.setloclist)
+      vim.keymap.set("n", "<leader>fea", vim.diagnostic.setqflist)
     end,
-  },
+  }
+end
 
-  -- linter
-  {
+local function linter()
+  return {
     "mfussenegger/nvim-lint",
     config = function()
       vim.env.ESLINT_D_PPID = vim.fn.getpid()
@@ -154,10 +167,11 @@ return {
         print("Config: " .. find_eslint_config())
       end, {})
     end,
-  },
+  }
+end
 
-  -- formatter
-  {
+local function formatter()
+  return {
     "stevearc/conform.nvim",
     event = { "BufWritePre" },
     cmd = { "ConformInfo" },
@@ -200,10 +214,11 @@ return {
     --     -- If you want the formatexpr, here is the place to set it
     --     vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     -- end,
-  },
+  }
+end
 
-  -- snippets
-  {
+local function snippets()
+  return {
     "L3MON4D3/LuaSnip",
     version = "v2.*",
     -- dependencies = { "rafamadriz/friendly-snippets" },
@@ -211,10 +226,11 @@ return {
       require("luasnip").setup({})
       require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/lua/snippets" })
     end,
-  },
+  }
+end
 
-  -- autocomplete
-  {
+local function autocomplete()
+  return {
     "hrsh7th/nvim-cmp",
     dependencies = {
       { "hrsh7th/cmp-nvim-lsp" },
@@ -324,47 +340,79 @@ return {
         }),
       })
     end,
-  },
+  }
+end
 
-  {
+local function treesitter()
+  return {
     "nvim-treesitter/nvim-treesitter",
+    event = { "BufReadPost", "BufNewFile" },
+    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
     build = ":TSUpdate",
+    lazy = false,
     branch = "main",
     config = function()
-      require("nvim-treesitter.config").setup({
-        ensure_installed = {
-          "bash",
-          "c",
-          "html",
-          "vim",
-          "lua",
-          "rust",
-          "python",
-          "yaml",
-          "vimdoc",
-          "vue",
-          "svelte",
-          "javascript",
-          "typescript",
-          "markdown",
-          "gleam",
-          "hyprlang",
-          "helm",
-          "gotmpl",
-          "go",
-          "css",
-          "scss",
-        },
-        sync_install = true,
-        auto_install = true,
-        highlight = {
-          enable = true,
-          additional_vim_regex_highlighting = false,
-        },
-      })
+      local ensure_installed = {
+        "bash",
+        "c",
+        "html",
+        "vim",
+        "lua",
+        "rust",
+        "python",
+        "yaml",
+        "vimdoc",
+        "vue",
+        "svelte",
+        "javascript",
+        "typescript",
+        "markdown",
+        "gleam",
+        "hyprlang",
+        "helm",
+        "gotmpl",
+        "go",
+        "css",
+        "scss",
+      }
+      require("nvim-treesitter").setup()
+      require("nvim-treesitter").install(ensure_installed)
+      -- only for master branch
+      -- require("nvim-treesitter.configs").setup({
+      --   ensure_installed = ensure_installed,
+      --   sync_install = true,
+      --   auto_install = true,
+      --   highlight = {
+      --     enable = true,
+      --     additional_vim_regex_highlighting = false,
+      --   },
+      -- })
       vim.filetype.add({
         pattern = { [".*/hypr/.*%.conf"] = "hyprlang" },
       })
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function(args)
+          local treesitter = require("nvim-treesitter")
+          local lang = vim.treesitter.language.get_lang(args.match)
+          if vim.list_contains(treesitter.get_available(), lang) then
+            if not vim.list_contains(treesitter.get_installed(), lang) then
+              treesitter.install(lang):wait()
+            end
+
+            vim.treesitter.start(args.buf)
+          end
+        end,
+        desc = "enable nvim-treesitter and install parser if not installed",
+      })
     end,
-  },
+  }
+end
+
+return {
+  lsp(),
+  linter(),
+  formatter(),
+  snippets(),
+  autocomplete(),
+  treesitter(),
 }
