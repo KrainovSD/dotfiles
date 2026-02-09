@@ -26,10 +26,6 @@ end, opts)
 -- escape terminal
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", opts)
 
--- terminal
-
--- tabs
-
 vim.cmd([[
 
 tnoremap <C-h> <C-\\><C-o><C-w>h
@@ -42,6 +38,7 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 nnoremap <C-j> <C-w>j
 
+" write to other register
 nnoremap c "_c
 vnoremap c "_c
 

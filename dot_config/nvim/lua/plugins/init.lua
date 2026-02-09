@@ -470,9 +470,56 @@ local function tabs()
       version = "*",
       dependencies = "nvim-tree/nvim-web-devicons",
       config = function()
+        vim.opt.termguicolors = true
+        local bufferline = require("bufferline")
+        local italic = false
+        local transparent = false
+        local bg = transparent and "none" or "#282828"
+        local colorscheme = {
+          standardWhite = "#fbf1c7",
+          standardBlack = "#1d2021",
+          editorBackground = transparent and "none" or "#1d2021",
+          sidebarBackground = "#282828",
+          popupBackground = "#3c3836",
+          floatingWindowBackground = "#504945",
+          menuOptionBackground = "#3c3836",
+          mainText = "#ebdbb2",
+          emphasisText = "#fbf1c7",
+          commandText = "#ebdbb2",
+          inactiveText = "#665c54",
+          disabledText = "#928374",
+          lineNumberText = "#7c6f64",
+          selectedText = "#282828",
+          inactiveSelectionText = "#665c54",
+          windowBorder = "#3c3836",
+          focusedBorder = "#504945",
+          emphasizedBorder = "#665c54",
+          specialValue = "#8ec07c",
+          syntaxError = "#fb4934",
+          syntaxFunction = "#83a598",
+          warningText = "#fabd2f",
+          syntaxKeyword = "#d3869b",
+          linkText = "#83a598",
+          stringText = "#b8bb26",
+          warningEmphasis = "#fabd2f",
+          successText = "#b8bb26",
+          errorText = "#fb4934",
+          specialKeyword = "#fe8019",
+          commentText = "#928374",
+          syntaxOperator = "#ebdbb2",
+          foregroundEmphasis = "#fbf1c7",
+          terminalGray = "#7c6f64",
+        }
         require("bufferline").setup({
           options = {
+            mode = "buffers",
+            separator_style = "slant",
+            numbers = "ordinal",
             diagnostics = "nvim_lsp",
+            diagnostics_indicator = function(count, level, diagnostics_dict, context)
+              local icon = level:match("error") and " " or " "
+              return " " .. icon .. count
+            end,
             offsets = {
               {
                 filetype = "neo-tree",
@@ -481,9 +528,148 @@ local function tabs()
                 text_align = "left",
               },
             },
+            style_preset = bufferline.style_preset.no_italic,
+            color_icons = true,
+            show_buffer_icons = true,
+            show_buffer_close_icons = true,
+            show_close_icon = false,
+          },
+          highlights = {
+            background = { bg = bg },
+            buffer_visible = { fg = colorscheme.lineNumberText, bg = bg },
+            buffer_selected = {
+              fg = colorscheme.mainText,
+              bg = colorscheme.editorBackground,
+            },
+            duplicate = {
+              fg = colorscheme.mainText,
+              bg = bg,
+              italic = italic,
+            },
+            duplicate_visible = {
+              fg = colorscheme.mainText,
+              bg = bg,
+              italic = italic,
+            },
+            duplicate_selected = {
+              fg = colorscheme.mainText,
+              bg = colorscheme.editorBackground,
+              italic = italic,
+            },
+
+            tab = { fg = colorscheme.mainText, bg = bg },
+            tab_selected = {
+              fg = colorscheme.mainText,
+              bg = colorscheme.editorBackground,
+            },
+            tab_close = { fg = colorscheme.syntaxError, bg = bg },
+            indicator_selected = {
+              fg = colorscheme.syntaxFunction,
+              bg = colorscheme.editorBackground,
+              bold = true,
+            },
+
+            separator = { fg = colorscheme.editorBackground, bg = bg },
+            separator_selected = {
+              fg = colorscheme.editorBackground,
+              bg = colorscheme.editorBackground,
+            },
+            separator_visible = { fg = colorscheme.editorBackground, bg = bg },
+            offset_separator = { fg = colorscheme.editorBackground, bg = bg },
+            tab_separator = { fg = colorscheme.editorBackground, bg = bg },
+            tab_separator_selected = {
+              fg = colorscheme.editorBackground,
+              bg = colorscheme.editorBackground,
+            },
+
+            close_button = { fg = colorscheme.lineNumberText, bg = bg },
+            close_button_visible = { fg = colorscheme.syntaxError, bg = bg },
+            close_button_selected = {
+              fg = colorscheme.syntaxError,
+              bg = colorscheme.editorBackground,
+            },
+
+            fill = { bg = bg },
+
+            numbers = { fg = colorscheme.lineNumberText, bg = bg },
+            numbers_visible = { fg = colorscheme.lineNumberText, bg = bg },
+            numbers_selected = {
+              fg = colorscheme.mainText,
+              bg = colorscheme.editorBackground,
+              italic = italic,
+            },
+
+            error = { fg = colorscheme.syntaxError, bg = bg },
+            error_visible = { fg = colorscheme.syntaxError, bg = bg },
+            error_selected = {
+              fg = colorscheme.syntaxError,
+              bg = colorscheme.editorBackground,
+              italic = italic,
+            },
+            error_diagnostic = { fg = colorscheme.syntaxError, bg = bg },
+            error_diagnostic_visible = { fg = colorscheme.syntaxError, bg = bg },
+            error_diagnostic_selected = {
+              fg = colorscheme.syntaxError,
+              bg = colorscheme.editorBackground,
+            },
+
+            warning = { fg = colorscheme.warningEmphasis, bg = bg },
+            warning_visible = { fg = colorscheme.warningEmphasis, bg = bg },
+            warning_selected = {
+              fg = colorscheme.warningEmphasis,
+              bg = colorscheme.editorBackground,
+              italic = italic,
+            },
+            warning_diagnostic = { fg = colorscheme.warningEmphasis, bg = bg },
+            warning_diagnostic_visible = { fg = colorscheme.warningEmphasis, bg = bg },
+            warning_diagnostic_selected = {
+              fg = colorscheme.warningEmphasis,
+              bg = colorscheme.editorBackground,
+            },
+
+            info = { fg = colorscheme.syntaxFunction, bg = bg },
+            info_visible = { fg = colorscheme.syntaxFunction, bg = bg },
+            info_selected = {
+              fg = colorscheme.syntaxFunction,
+              bg = colorscheme.editorBackground,
+              italic = italic,
+            },
+            info_diagnostic = { fg = colorscheme.syntaxFunction, bg = bg },
+            info_diagnostic_visible = { fg = colorscheme.syntaxFunction, bg = bg },
+            info_diagnostic_selected = {
+              fg = colorscheme.syntaxFunction,
+              bg = colorscheme.editorBackground,
+            },
+
+            hint = { fg = colorscheme.successText, bg = bg },
+            hint_visible = { fg = colorscheme.successText, bg = bg },
+            hint_selected = {
+              fg = colorscheme.successText,
+              bg = colorscheme.editorBackground,
+              italic = italic,
+            },
+            hint_diagnostic = { fg = colorscheme.successText, bg = bg },
+            hint_diagnostic_visible = { fg = colorscheme.successText, bg = bg },
+            hint_diagnostic_selected = {
+              fg = colorscheme.successText,
+              bg = colorscheme.editorBackground,
+            },
+
+            diagnostic = { fg = colorscheme.lineNumberText, bg = bg },
+            diagnostic_visible = { fg = colorscheme.lineNumberText, bg = bg },
+            diagnostic_selected = {
+              fg = colorscheme.lineNumberText,
+              bg = colorscheme.editorBackground,
+              italic = italic,
+            },
+
+            modified = { fg = colorscheme.warningText, bg = bg },
+            modified_selected = {
+              fg = colorscheme.warningText,
+              bg = colorscheme.editorBackground,
+            },
           },
         })
-        local bufferline = require("bufferline")
         vim.keymap.set("n", "<S-Tab>", function()
           bufferline.cycle(-1)
         end)
@@ -756,6 +942,66 @@ local function flash_move()
   }
 end
 
+local function noice_ui()
+  return {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      -- "rcarriga/nvim-notify",
+    },
+    config = function()
+      require("noice").setup({
+        presets = {
+          bottom_search = false, -- use a classic bottom cmdline for search
+          command_palette = true, -- position the cmdline and popupmenu together
+          long_message_to_split = true, -- long messages will be sent to a split
+          inc_rename = false, -- enables an input dialog for inc-rename.nvim
+          lsp_doc_border = true, -- add a border to hover docs and signature help
+        },
+        lsp = {
+          -- override = {
+          --   ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+          --   ["vim.lsp.util.stylize_markdown"] = true,
+          --   ["cmp.entry.get_documentation"] = true,
+          -- },
+          -- hover = {
+          --   enabled = true,
+          --   silent = true,
+          --   view = "hover",
+          -- },
+          -- signature = {
+          --   enabled = true,
+          --   view = "hover",
+          -- },
+        },
+        views = {
+          cmdline_popup = {
+            position = {
+              row = "95%",
+              col = "5%",
+            },
+            size = {
+              width = 60,
+              height = "auto",
+            },
+          },
+          popupmenu = {
+            position = {
+              row = "90%",
+              col = "5%",
+            },
+            size = {
+              width = 60,
+              height = 10,
+            },
+          },
+        },
+      })
+    end,
+  }
+end
+
 local file_info_plugins = file_info_incline()
 local auto_comment_plugins = auto_comment()
 local git_plugins = git()
@@ -792,4 +1038,5 @@ return {
   telescope_plugins.telescope,
   npm(),
   flash_move(),
+  -- noice_ui(),
 }

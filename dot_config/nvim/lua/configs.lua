@@ -16,6 +16,7 @@ vim.cmd("filetype indent on")
 
 -- UI configuration
 vim.opt.number = true -- Show line numbers
+vim.o.winborder = "rounded"
 -- vim.opt.numberwidth = 2
 vim.opt.syntax = "on" -- Enable syntax highlighting
 vim.opt.relativenumber = true -- Show relative line numbers
