@@ -390,6 +390,7 @@ local function treesitter()
       vim.filetype.add({
         pattern = { [".*/hypr/.*%.conf"] = "hyprlang" },
       })
+      vim.api.nvim_command("autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>")
       vim.api.nvim_create_autocmd("FileType", {
         callback = function(args)
           local treesitter = require("nvim-treesitter")
