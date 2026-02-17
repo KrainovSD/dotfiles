@@ -76,6 +76,7 @@ local function lsp()
           },
         },
       })
+
       vim.keymap.set("n", "<leader>gb", "<C-o>")
       vim.keymap.set("n", "<leader>gf", "<C-i>")
       vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action)
@@ -114,13 +115,14 @@ local function linter()
         -- go = { "golangci-lint" },
         sh = { "shellcheck" },
         bash = { "shellcheck" },
+        html = { "eslint_d" },
       }
       vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave", "TextChanged" }, {
         callback = function()
           require("lint").try_lint()
         end,
       })
-      -- eslint
+      -- eslintt
       local function find_eslint_config()
         local current_file = vim.api.nvim_buf_get_name(0)
         if current_file == "" then
@@ -207,6 +209,7 @@ local function formatter()
         go = { "goimports" },
         sh = { "shfmt" },
         bash = { "shfmt" },
+        gotmpl = { "prettierd" },
       },
       format_on_save = { timeout_ms = 500, lsp_fallback = true },
     },

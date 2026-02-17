@@ -18,3 +18,8 @@ frontend_protocol
 proto
 frontend_host
 auth
+env
+tmpl
+vite
+json
+gotmpl

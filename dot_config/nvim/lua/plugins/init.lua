@@ -252,13 +252,17 @@ local function status_line()
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
+      local function get_short_cwd()
+        return vim.fn.fnamemodify(vim.fn.getcwd(), ":~")
+      end
+
       require("lualine").setup({
         options = {
           theme = "gruvbox",
           icons_enabled = true,
           -- component_separators = { left = "", right = "" },
           -- section_separators = { left = "", right = "" },
-          disabled_filetypes = { "NvimTree", "TelescopePrompt", "packer", "toggleterm", "neotree", "neo-tree" },
+          -- disabled_filetypes = { "NvimTree", "TelescopePrompt", "packer", "toggleterm", "neotree", "neo-tree" },
           always_divide_middle = true,
           globalstatus = true,
         },
@@ -279,7 +283,19 @@ local function status_line()
           lualine_z = {},
         },
         tabline = {},
-        extensions = { "neo-tree" },
+        extensions = {
+          {
+            filetypes = { "neo-tree" },
+            sections = {
+              lualine_a = { "mode" },
+              lualine_b = { "branch" },
+              lualine_c = { get_short_cwd },
+              lualine_x = { "encoding", "fileformat", "filetype" },
+              lualine_y = { "progress" },
+              lualine_z = { "location" },
+            },
+          },
+        },
       })
     end,
   }
