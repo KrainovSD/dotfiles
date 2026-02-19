@@ -86,91 +86,91 @@ local function surround()
   }
 end
 
-local function file_info_incline()
-  return {
-    -- hierarchy symantic navigation for line plugin
-    navic = {
-      "SmiteshP/nvim-navic",
-      lazy = true,
-      init = function()
-        vim.g.navic_silence = true
-      end,
-      config = function()
-        require("nvim-navic").setup({
-          separator = " > ",
-          highlight = true,
-        })
-
-        vim.api.nvim_create_autocmd("LspAttach", {
-          group = vim.api.nvim_create_augroup("NavicAttach", { clear = true }),
-          callback = function(args)
-            local client = vim.lsp.get_client_by_id(args.data.client_id)
-            local bufnr = args.buf
-
-            if client and client.server_capabilities.documentSymbolProvider then
-              require("nvim-navic").attach(client, bufnr)
-            end
-          end,
-        })
-      end,
-    },
-    -- line info in first row
-    incline = {
-      "b0o/incline.nvim",
-      config = function()
-        require("incline").setup({
-          highlight = {
-            groups = {
-              InclineNormal = {
-                guibg = "#3c3836", -- dark1 в gruvbox
-                guifg = "#ebdbb2", -- light1 в gruvbox
-              },
-              InclineNormalNC = {
-                guibg = "#504945", -- dark2 в gruvbox
-                guifg = "#a89984", -- light4 в gruvbox
-              },
-            },
-          },
-          window = {
-            margin = { vertical = 0, horizontal = 1 },
-          },
-          hide = {
-            cursorline = true,
-          },
-          render = function(props)
-            local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-            if filename == "" then
-              filename = "[No Name]"
-            end
-            local icon, color = require("nvim-web-devicons").get_icon_color(filename)
-            local modified = vim.api.nvim_buf_get_option(props.buf, "modified") and " [+]" or ""
-            local readonly = vim.api.nvim_buf_get_option(props.buf, "readonly") and " [RO]" or ""
-            local response = {
-              { icon, guifg = color },
-              { " " },
-              { filename },
-              { modified },
-              { readonly },
-            }
-            local symantic_location = require("nvim-navic").get_data(props.buf) or {}
-            if props.focused then
-              for _, item in ipairs(symantic_location) do
-                table.insert(response, {
-                  { " > ", group = "NavicSeparator" },
-                  { item.icon, group = "NavicIcons" .. item.type },
-                  { item.name, group = "NavicText" },
-                })
-              end
-            end
-            table.insert(response, " ")
-            return response
-          end,
-        })
-      end,
-      event = "VeryLazy",
-    },
-  }
-end
+-- local function file_info_incline()
+--   return {
+--     -- hierarchy symantic navigation for line plugin
+--     navic = {
+--       "SmiteshP/nvim-navic",
+--       lazy = true,
+--       init = function()
+--         vim.g.navic_silence = true
+--       end,
+--       config = function()
+--         require("nvim-navic").setup({
+--           separator = " > ",
+--           highlight = true,
+--         })
+--
+--         vim.api.nvim_create_autocmd("LspAttach", {
+--           group = vim.api.nvim_create_augroup("NavicAttach", { clear = true }),
+--           callback = function(args)
+--             local client = vim.lsp.get_client_by_id(args.data.client_id)
+--             local bufnr = args.buf
+--
+--             if client and client.server_capabilities.documentSymbolProvider then
+--               require("nvim-navic").attach(client, bufnr)
+--             end
+--           end,
+--         })
+--       end,
+--     },
+--     -- line info in first row
+--     incline = {
+--       "b0o/incline.nvim",
+--       config = function()
+--         require("incline").setup({
+--           highlight = {
+--             groups = {
+--               InclineNormal = {
+--                 guibg = "#3c3836", -- dark1 в gruvbox
+--                 guifg = "#ebdbb2", -- light1 в gruvbox
+--               },
+--               InclineNormalNC = {
+--                 guibg = "#504945", -- dark2 в gruvbox
+--                 guifg = "#a89984", -- light4 в gruvbox
+--               },
+--             },
+--           },
+--           window = {
+--             margin = { vertical = 0, horizontal = 1 },
+--           },
+--           hide = {
+--             cursorline = true,
+--           },
+--           render = function(props)
+--             local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
+--             if filename == "" then
+--               filename = "[No Name]"
+--             end
+--             local icon, color = require("nvim-web-devicons").get_icon_color(filename)
+--             local modified = vim.api.nvim_buf_get_option(props.buf, "modified") and " [+]" or ""
+--             local readonly = vim.api.nvim_buf_get_option(props.buf, "readonly") and " [RO]" or ""
+--             local response = {
+--               { icon, guifg = color },
+--               { " " },
+--               { filename },
+--               { modified },
+--               { readonly },
+--             }
+--             local symantic_location = require("nvim-navic").get_data(props.buf) or {}
+--             if props.focused then
+--               for _, item in ipairs(symantic_location) do
+--                 table.insert(response, {
+--                   { " > ", group = "NavicSeparator" },
+--                   { item.icon, group = "NavicIcons" .. item.type },
+--                   { item.name, group = "NavicText" },
+--                 })
+--               end
+--             end
+--             table.insert(response, " ")
+--             return response
+--           end,
+--         })
+--       end,
+--       event = "VeryLazy",
+--     },
+--   }
+-- end
 
 local function fold_ufo()
   return {
@@ -974,13 +974,36 @@ local function indent_blankline()
           char = "|",
         },
         scope = {
-          enabled = true,
+          enabled = false,
           highlight = {
             "IndentBlanklineCurrentScope",
           },
           show_start = false,
           show_end = false,
         },
+      })
+    end,
+  }
+end
+
+local function treesitter_context()
+  return {
+    "nvim-treesitter/nvim-treesitter-context",
+    config = function()
+      require("treesitter-context").setup({
+        enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+        multiwindow = false, -- Enable multiwindow support.
+        max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+        min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+        line_numbers = true,
+        multiline_threshold = 20, -- Maximum number of lines to show for a single context
+        trim_scope = "outer", -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+        mode = "cursor", -- Line used to calculate context. Choices: 'cursor', 'topline'
+        -- Separator between context and content. Should be a single character string, like '-'.
+        -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+        separator = nil,
+        zindex = 20, -- The Z-index of the context window
+        on_attach = nil,
       })
     end,
   }
@@ -1046,7 +1069,7 @@ end
 --   }
 -- end
 
-local file_info_plugins = file_info_incline()
+-- local file_info_plugins = file_info_incline()
 local auto_comment_plugins = auto_comment()
 local git_plugins = git()
 local tabs_plugins = tabs()
@@ -1057,8 +1080,8 @@ return {
   clipboard_in_ssh(),
   ts_autotag(),
   surround(),
-  file_info_plugins.navic,
-  file_info_plugins.incline,
+  -- file_info_plugins.navic,
+  -- file_info_plugins.incline,
   fold_ufo(),
   status_line(),
   todo_comments(),
@@ -1083,5 +1106,6 @@ return {
   npm(),
   flash_move(),
   indent_blankline(),
+  treesitter_context(),
   -- noice_ui(),
 }
