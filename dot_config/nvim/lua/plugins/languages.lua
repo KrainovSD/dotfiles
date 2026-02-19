@@ -25,6 +25,9 @@ local function lsp()
         "clangd",
         "html-lsp",
         "marksman",
+        "dockerfile-language-server",
+        "docker-compose-language-service",
+        "yaml-language-server",
 
         "eslint_d",
         "stylelint",
@@ -32,6 +35,7 @@ local function lsp()
         "selene",
         "shellcheck",
         "cpplint",
+        "hadolint",
 
         "prettierd",
         "ruff",
@@ -39,6 +43,7 @@ local function lsp()
         "goimports",
         "clang-format",
         "shfmt",
+        "yamlfmt",
       }
 
       -- Функция для установки всех инструментов
@@ -74,6 +79,13 @@ local function lsp()
                 .. "/mason/packages/vue-language-server/node_modules/@vue/language-server",
             },
           },
+        },
+      })
+
+      vim.lsp.config("html", {
+        filetypes = {
+          "html",
+          "gotmpl",
         },
       })
 
@@ -116,6 +128,8 @@ local function linter()
         sh = { "shellcheck" },
         bash = { "shellcheck" },
         html = { "eslint_d" },
+        gotmpl = { "eslint_d" },
+        dockerfile = { "hadolint" },
       }
       vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave", "TextChanged" }, {
         callback = function()
@@ -198,7 +212,6 @@ local function formatter()
         vue = { "prettierd" },
         svelte = { "prettierd" },
         json = { "prettierd" },
-        yaml = { "prettierd" },
         jsonc = { "prettierd" },
         css = { "prettierd" },
         scss = { "prettierd" },
@@ -210,6 +223,8 @@ local function formatter()
         sh = { "shfmt" },
         bash = { "shfmt" },
         gotmpl = { "prettierd" },
+        yaml = { "prettierd" },
+        dockerfile = { "hadolint" },
       },
       format_on_save = { timeout_ms = 500, lsp_fallback = true },
     },
@@ -249,7 +264,6 @@ local function autocomplete()
     },
     config = function()
       local cmp = require("cmp")
-      local lspkind = require("lspkind")
       cmp.setup({
         completion = {
           max_height = math.floor(vim.o.lines * 0.3),
@@ -393,14 +407,26 @@ local function treesitter()
       vim.filetype.add({
         pattern = { [".*/hypr/.*%.conf"] = "hyprlang" },
       })
+      vim.filetype.add({
+        extension = {
+          gotmpl = "gotmpl",
+        },
+      })
+      vim.filetype.add({
+        pattern = {
+          ["^.env"] = "env",
+          [".env"] = "env",
+        },
+      })
+      vim.treesitter.language.register("html", "gotmpl")
       vim.api.nvim_command("autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>")
       vim.api.nvim_create_autocmd("FileType", {
         callback = function(args)
-          local treesitter = require("nvim-treesitter")
+          local treesitter_plugin = require("nvim-treesitter")
           local lang = vim.treesitter.language.get_lang(args.match)
-          if vim.list_contains(treesitter.get_available(), lang) then
-            if not vim.list_contains(treesitter.get_installed(), lang) then
-              treesitter.install(lang):wait()
+          if vim.list_contains(treesitter_plugin.get_available(), lang) then
+            if not vim.list_contains(treesitter_plugin.get_installed(), lang) then
+              treesitter_plugin.install(lang):wait()
             end
 
             vim.treesitter.start(args.buf)

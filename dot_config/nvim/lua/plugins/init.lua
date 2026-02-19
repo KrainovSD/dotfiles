@@ -49,6 +49,9 @@ local function ts_autotag()
     "windwp/nvim-ts-autotag",
     config = function()
       require("nvim-ts-autotag").setup({
+        aliases = {
+          ["gotmpl"] = "html",
+        },
         opts = {
           enable_close = true,
           enable_rename = true,
@@ -209,7 +212,7 @@ local function fold_ufo()
 
       require("ufo").setup({
         fold_virt_text_handler = text_handler,
-        provider_selector = function(bufnr, filetype, buftype)
+        provider_selector = function()
           return { "treesitter", "indent" }
         end,
         open_fold_hl_timeout = 150,
@@ -532,7 +535,7 @@ local function tabs()
             separator_style = "slant",
             numbers = "ordinal",
             diagnostics = "nvim_lsp",
-            diagnostics_indicator = function(count, level, diagnostics_dict, context)
+            diagnostics_indicator = function(count, level)
               local icon = level:match("error") and " " or " "
               return " " .. icon .. count
             end,
@@ -815,8 +818,8 @@ local function telescope()
         },
       },
       config = function()
-        local telescope = require("telescope")
-        telescope.setup({
+        local telescope_plugin = require("telescope")
+        telescope_plugin.setup({
           defaults = {
             mappings = {
               i = {
@@ -848,7 +851,7 @@ local function telescope()
             -- },
           },
         })
-        telescope.load_extension("fzf")
+        telescope_plugin.load_extension("fzf")
         local builtin = require("telescope.builtin")
         vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Telescope find files" })
         vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live grep" })
@@ -958,65 +961,90 @@ local function flash_move()
   }
 end
 
-local function noice_ui()
+local function indent_blankline()
   return {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-      -- "rcarriga/nvim-notify",
-    },
+    "lukas-reineke/indent-blankline.nvim",
     config = function()
-      require("noice").setup({
-        presets = {
-          bottom_search = false, -- use a classic bottom cmdline for search
-          command_palette = true, -- position the cmdline and popupmenu together
-          long_message_to_split = true, -- long messages will be sent to a split
-          inc_rename = false, -- enables an input dialog for inc-rename.nvim
-          lsp_doc_border = true, -- add a border to hover docs and signature help
+      vim.api.nvim_set_hl(0, "IndentBlanklineCurrentScope", {
+        fg = "#d79921", -- yellow,
+        -- fg = "#98971a", --  green
+      })
+      require("ibl").setup({
+        indent = {
+          char = "|",
         },
-        lsp = {
-          -- override = {
-          --   ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-          --   ["vim.lsp.util.stylize_markdown"] = true,
-          --   ["cmp.entry.get_documentation"] = true,
-          -- },
-          -- hover = {
-          --   enabled = true,
-          --   silent = true,
-          --   view = "hover",
-          -- },
-          -- signature = {
-          --   enabled = true,
-          --   view = "hover",
-          -- },
-        },
-        views = {
-          cmdline_popup = {
-            position = {
-              row = "95%",
-              col = "5%",
-            },
-            size = {
-              width = 60,
-              height = "auto",
-            },
+        scope = {
+          enabled = true,
+          highlight = {
+            "IndentBlanklineCurrentScope",
           },
-          popupmenu = {
-            position = {
-              row = "90%",
-              col = "5%",
-            },
-            size = {
-              width = 60,
-              height = 10,
-            },
-          },
+          show_start = false,
+          show_end = false,
         },
       })
     end,
   }
 end
+
+-- local function noice_ui()
+--   return {
+--     "folke/noice.nvim",
+--     event = "VeryLazy",
+--     dependencies = {
+--       "MunifTanjim/nui.nvim",
+--       -- "rcarriga/nvim-notify",
+--     },
+--     config = function()
+--       require("noice").setup({
+--         presets = {
+--           bottom_search = false, -- use a classic bottom cmdline for search
+--           command_palette = true, -- position the cmdline and popupmenu together
+--           long_message_to_split = true, -- long messages will be sent to a split
+--           inc_rename = false, -- enables an input dialog for inc-rename.nvim
+--           lsp_doc_border = true, -- add a border to hover docs and signature help
+--         },
+--         lsp = {
+--           -- override = {
+--           --   ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+--           --   ["vim.lsp.util.stylize_markdown"] = true,
+--           --   ["cmp.entry.get_documentation"] = true,
+--           -- },
+--           -- hover = {
+--           --   enabled = true,
+--           --   silent = true,
+--           --   view = "hover",
+--           -- },
+--           -- signature = {
+--           --   enabled = true,
+--           --   view = "hover",
+--           -- },
+--         },
+--         views = {
+--           cmdline_popup = {
+--             position = {
+--               row = "95%",
+--               col = "5%",
+--             },
+--             size = {
+--               width = 60,
+--               height = "auto",
+--             },
+--           },
+--           popupmenu = {
+--             position = {
+--               row = "90%",
+--               col = "5%",
+--             },
+--             size = {
+--               width = 60,
+--               height = 10,
+--             },
+--           },
+--         },
+--       })
+--     end,
+--   }
+-- end
 
 local file_info_plugins = file_info_incline()
 local auto_comment_plugins = auto_comment()
@@ -1054,5 +1082,6 @@ return {
   telescope_plugins.telescope,
   npm(),
   flash_move(),
+  indent_blankline(),
   -- noice_ui(),
 }
