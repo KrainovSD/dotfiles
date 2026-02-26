@@ -17,7 +17,9 @@ A-Arrow - buffer sizing
 
 <leader>dpl - inline preview diff
 <leader>dr - reset diff
-<leader>dbv - check buffer diff
+<leader>dpb - check buffer diff
+<leader>dn - next diff
+<leader>dN - prev diff
 <leader>do - open diff file menu
 <leader>dh - open diff history menu
 <leader>dc - close diff menu
@@ -89,3 +91,7 @@ cs\*\* - change surround from to
 asw\* - add surround
 cst - change both of tag
 dst - delete tag without children
+
+# Batch replace
+
+find all through telescope + ctrl Q + :cdo s/from/to/c
