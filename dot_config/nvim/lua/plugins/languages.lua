@@ -28,6 +28,7 @@ local function lsp()
         "dockerfile-language-server",
         "docker-compose-language-service",
         "yaml-language-server",
+        "angular-language-server",
 
         "eslint_d",
         "stylelint",
@@ -145,7 +146,10 @@ local function linter()
         local config_files = {
           "eslint.config.js",
           "eslint.config.cjs",
+          "eslint.config.mjs",
           ".eslintrc.cjs",
+          ".eslintrc.mjs",
+          ".eslintrc.js",
           ".eslintrc.yaml",
           ".eslintrc.yml",
           ".eslintrc.json",

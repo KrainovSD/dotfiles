@@ -95,3 +95,4 @@ dst - delete tag without children
 # Batch replace
 
 find all through telescope + ctrl Q + :cdo s/from/to/c
+in target buffer :%s/from/to/c

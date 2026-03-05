@@ -153,3 +153,14 @@ export MY_LOCAL_IP=192.168.135.198
 export PATH=$PATH:$(go env GOPATH)/bin
 
 # [[ -s "/home/krainov/.gvm/scripts/gvm" ]] && source "/home/krainov/.gvm/scripts/gvm"
+
+# pnpm
+export PNPM_HOME="/home/krainov/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# OpenClaw Completion
+source "/home/krainov/.openclaw/completions/openclaw.zsh"
