@@ -3,25 +3,35 @@ layout {
     pane size=1 {
       borderless true
       plugin location="zellij:tab-bar"
-      plugin location="zellij:status-bar"
     }
     children
-  }
-  tab name="workspace" cwd="projects" {
-    pane split_direction="vertical" {
-      pane
-      pane
-    }
-    pane split_direction="vertical" {
-      pane
-      pane
+    pane size=1 {
+      borderless true
+      plugin location="zellij:status-bar"
     }
   }
-  tab name="k9s" {
-    pane command="k9s"
+  tab name="editor" cwd="projects" {
+    pane
+    
   }
-  tab name="resources"{
-    pane command="btop"
+  tab name="runner" cwd="projects" {
+    pane split_direction="horizontal" {
+      pane
+      pane split_direction="vertical" {
+        pane
+        pane
+      }
+    }
+    
   }
-
+  tab name="worker" {
+    pane split_direction="horizontal" {
+      pane
+      pane split_direction="vertical" {
+        pane
+        pane
+      }
+    }
+    
+  }
 }
