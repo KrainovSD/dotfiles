@@ -357,7 +357,9 @@ local function smart_splits()
     "mrjones2014/smart-splits.nvim",
     config = function()
       local sp = require("smart-splits")
-      sp.setup({})
+      sp.setup({
+        zellij_move_focus_or_tab = true,
+      })
       vim.keymap.set({ "n", "t" }, "<A-Left>", sp.resize_left)
       vim.keymap.set({ "n", "t" }, "<A-Right>", sp.resize_right)
       vim.keymap.set({ "n", "t" }, "<A-Down>", sp.resize_down)
@@ -368,10 +370,15 @@ local function smart_splits()
       vim.keymap.set({ "n", "t" }, "<leader>mj", sp.swap_buf_down)
       vim.keymap.set({ "n", "t" }, "<leader>mk", sp.swap_buf_up)
 
-      -- vim.keymap.set({ "n", "t" }, "<C-h>", sp.move_cursor_left)
-      -- vim.keymap.set({ "n", "t" }, "<C-l>", sp.move_cursor_right)
-      -- vim.keymap.set({ "n", "t" }, "<C-j>", sp.move_cursor_down)
-      -- vim.keymap.set({ "n", "t" }, "<C-k>", sp.move_cursor_up)
+      vim.keymap.set({ "n", "t" }, "<C-h>", sp.move_cursor_left)
+      vim.keymap.set({ "n", "t" }, "<C-l>", sp.move_cursor_right)
+      vim.keymap.set({ "n", "t" }, "<C-j>", sp.move_cursor_down)
+      vim.keymap.set({ "n", "t" }, "<C-k>", sp.move_cursor_up)
+
+      vim.keymap.set({ "n", "t" }, "<C-Left>", sp.move_cursor_left)
+      vim.keymap.set({ "n", "t" }, "<C-Right>", sp.move_cursor_right)
+      vim.keymap.set({ "n", "t" }, "<C-Down>", sp.move_cursor_down)
+      vim.keymap.set({ "n", "t" }, "<C-Up>", sp.move_cursor_up)
     end,
   }
 end

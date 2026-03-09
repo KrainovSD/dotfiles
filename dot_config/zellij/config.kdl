@@ -6,11 +6,42 @@ keybinds {
         bind "Esc" { SwitchToMode "Locked"; }
     }
     locked {
+        unbind "Alt j" "Alt k"
         bind "Ctrl a" { SwitchToMode "Normal"; }
         bind "Alt h" { MoveFocusOrTab "Left"; }
         bind "Alt l" { MoveFocusOrTab "Right"; }
-        bind "Alt j" { MoveFocus "Down"; }
-        bind "Alt k" { MoveFocus "Up"; }
+        bind "Ctrl h" {
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
+                name "move_focus_or_tab";
+                payload "left";
+                move_mod "ctrl"; 
+                use_arrow_keys "false"; 
+            };
+        }
+        bind "Ctrl j" {
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
+                name "move_focus";
+                payload "down";
+                move_mod "ctrl";
+                use_arrow_keys "false";
+            };
+        }
+        bind "Ctrl k" {
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
+                name "move_focus";
+                payload "up";
+                move_mod "ctrl";
+                use_arrow_keys "false";
+            };
+        }
+        bind "Ctrl l" {
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
+                name "move_focus_or_tab";
+                payload "right";
+                move_mod "ctrl"; 
+                use_arrow_keys "false";
+            };
+        } 
     }
     resize {
         bind "Ctrl n" { SwitchToMode "Locked"; }
@@ -110,11 +141,9 @@ keybinds {
     }
     renametab {
         bind "Ctrl c" { SwitchToMode "Locked"; }
-        bind "Esc" { UndoRenameTab; SwitchToMode "Tab"; }
     }
     renamepane {
         bind "Ctrl c" { SwitchToMode "Locked"; }
-        bind "Esc" { UndoRenamePane; SwitchToMode "Pane"; }
     }
     session {
         bind "Ctrl o" { SwitchToMode "Locked"; }
@@ -182,16 +211,13 @@ keybinds {
     }
     shared_except "locked" {
         unbind "Alt Left" "Alt Right" "Alt Down" "Alt Up"
+        unbind "Alt h" "Alt l" "Alt j" "Alt k"
         unbind "Ctrl q"
         bind "Ctrl a" { SwitchToMode "Locked"; }
         bind "Alt f" { ToggleFloatingPanes; }
         bind "Alt n" { NewPane; }
         bind "Alt i" { MoveTab "Left"; }
         bind "Alt o" { MoveTab "Right"; }
-        bind "Alt h" { MoveFocusOrTab "Left"; }
-        bind "Alt l" { MoveFocusOrTab "Right"; }
-        bind "Alt j" { MoveFocus "Down"; }
-        bind "Alt k" { MoveFocus "Up"; }
         bind "Alt =" "Alt +" { Resize "Increase"; }
         bind "Alt -" { Resize "Decrease"; }
         bind "Alt [" { PreviousSwapLayout; }
@@ -202,31 +228,31 @@ keybinds {
     shared_except "normal" "locked" {
         bind "Enter" "Esc" { SwitchToMode "Locked"; }
     }
-    shared_except "pane" "locked" {
+    shared_except "pane" "locked" "renametab" "renamepane" {
         unbind "Ctrl p"
         bind "p" { SwitchToMode "Pane"; }
     }
-    shared_except "resize" "locked" {
+    shared_except "resize" "locked" "renametab" "renamepane" {
         unbind "Ctrl n"
         bind "n" { SwitchToMode "Resize"; }
     }
-    shared_except "scroll" "locked" {
+    shared_except "scroll" "locked" "renametab" "renamepane" {
         unbind "Ctrl s"
         bind "s" { SwitchToMode "Scroll"; }
     }
-    shared_except "session" "locked" {
+    shared_except "session" "locked" "renametab" "renamepane" {
         unbind "Ctrl o"
         bind "o" { SwitchToMode "Session"; }
     }
-    shared_except "tab" "locked" {
+    shared_except "tab" "locked" "renametab" "renamepane" {
         unbind "Ctrl t"
         bind "t" { SwitchToMode "Tab"; }
     }
-    shared_except "move" "locked" {
+    shared_except "move" "locked" "renametab" "renamepane" {
         unbind "Ctrl h"
         bind "h" { SwitchToMode "Move"; }
     }
-    shared_except "tmux" "locked" {
+    shared_except "tmux" "locked" "renametab" "renamepane" {
         unbind "Ctrl b"
         bind "b" { SwitchToMode "Tmux"; }
     }
@@ -269,6 +295,10 @@ advanced_mouse_actions false
 default_mode "locked"
 web_client {
     font "monospace"
+}
+
+env {
+    TERM "xterm-kitty"
 }
 
 // For more examples, see: https://github.com/zellij-org/zellij/tree/main/example/themes

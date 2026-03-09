@@ -59,5 +59,3 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-# OpenClaw Completion
-source "/home/krainov/.openclaw/completions/openclaw.zsh"
