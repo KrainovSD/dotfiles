@@ -8,8 +8,8 @@ keybinds {
     locked {
         unbind "Alt j" "Alt k"
         bind "Ctrl a" { SwitchToMode "Normal"; }
-        bind "Alt h" { MoveFocusOrTab "Left"; }
-        bind "Alt l" { MoveFocusOrTab "Right"; }
+        bind "Alt h" { GoToPreviousTab; }
+        bind "Alt l" { GoToNextTab; }
         bind "Ctrl h" {
             MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
                 name "move_focus_or_tab";
