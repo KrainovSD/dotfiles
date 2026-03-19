@@ -29,6 +29,8 @@ local function lsp()
         "docker-compose-language-service",
         "yaml-language-server",
         "angular-language-server",
+        -- "csharp-language-server",
+        "omnisharp",
 
         "eslint_d",
         "stylelint",
@@ -172,8 +174,8 @@ local function linter()
       require("lint").linters.eslint_d.args[6] = "--config"
       require("lint").linters.eslint_d.args[7] = find_eslint_config
 
-      require("lint").linters.eslint_d.args[8] = "--ext"
-      require("lint").linters.eslint_d.args[9] = ".js,.jsx,.ts,.tsx,.vue,.svelte"
+      -- require("lint").linters.eslint_d.args[8] = "--ext"
+      -- require("lint").linters.eslint_d.args[9] = ".js,.jsx,.ts,.tsx,.vue,.svelte"
       -- debug
       vim.api.nvim_create_user_command("LintInfo", function()
         local filetype = vim.bo.filetype

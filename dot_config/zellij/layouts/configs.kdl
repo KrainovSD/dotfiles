@@ -22,6 +22,9 @@ layout {
   tab name="zellij" cwd=".config/zellij" {
     pane 
   }
+  tab name=".local/share/chezmoi" {
+    pane 
+  }
   tab name="others" {
     pane 
   }
