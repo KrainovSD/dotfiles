@@ -31,6 +31,8 @@ local function lsp()
         "angular-language-server",
         -- "csharp-language-server",
         "omnisharp",
+        "phpactor",
+        -- "sqls",
 
         "eslint_d",
         "stylelint",
@@ -47,6 +49,8 @@ local function lsp()
         "clang-format",
         "shfmt",
         "yamlfmt",
+        "sql-formatter",
+        "pgformatter",
       }
 
       -- Функция для установки всех инструментов
@@ -84,7 +88,6 @@ local function lsp()
           },
         },
       })
-
       vim.lsp.config("html", {
         filetypes = {
           "html",
@@ -113,8 +116,9 @@ local function linter()
   return {
     "mfussenegger/nvim-lint",
     config = function()
+      local lint = require("lint")
       vim.env.ESLINT_D_PPID = vim.fn.getpid()
-      require("lint").linters_by_ft = {
+      lint.linters_by_ft = {
         javascript = { "eslint_d" },
         javascriptreact = { "eslint_d" },
         typescript = { "eslint_d" },
@@ -134,48 +138,34 @@ local function linter()
         gotmpl = { "eslint_d" },
         dockerfile = { "hadolint" },
       }
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave", "TextChanged" }, {
-        callback = function()
-          require("lint").try_lint()
-        end,
-      })
-      -- eslintt
-      local function find_eslint_config()
-        local current_file = vim.api.nvim_buf_get_name(0)
-        if current_file == "" then
-          return nil
+      -- eslint_d
+      local function find_project_root()
+        local file = vim.api.nvim_buf_get_name(0)
+        if file == "" then
+          return vim.loop.cwd()
         end
-        local config_files = {
-          "eslint.config.js",
-          "eslint.config.cjs",
-          "eslint.config.mjs",
-          ".eslintrc.cjs",
-          ".eslintrc.mjs",
-          ".eslintrc.js",
-          ".eslintrc.yaml",
-          ".eslintrc.yml",
-          ".eslintrc.json",
-          ".eslintrc",
-        }
-        local file_dir = vim.fn.fnamemodify(current_file, ":h")
-        local found = vim.fs.find(config_files, {
+        local root = vim.fs.find({ "package.json" }, {
           upward = true,
-          path = file_dir,
-          stop = vim.loop.cwd(),
-        })
-        if #found == 0 then
-          found = vim.fs.find(config_files, {
-            path = vim.loop.cwd(),
-          })
-        end
-        return found[1] or nil
+          path = vim.fn.fnamemodify(file, ":h"),
+        })[1]
+        return root and vim.fn.fnamemodify(root, ":h") or vim.loop.cwd()
       end
 
-      require("lint").linters.eslint_d.args[6] = "--config"
-      require("lint").linters.eslint_d.args[7] = find_eslint_config
+      lint.linters.eslint_d.root_dir = find_project_root
+      vim.env.PATH = find_project_root() .. "/node_modules/.bin:" .. vim.env.PATH
 
-      -- require("lint").linters.eslint_d.args[8] = "--ext"
-      -- require("lint").linters.eslint_d.args[9] = ".js,.jsx,.ts,.tsx,.vue,.svelte"
+      -- exec
+      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave", "TextChanged" }, {
+        callback = function()
+          local linters = require("lint").linters_by_ft[vim.bo.filetype]
+          if linters ~= nil and linters[1] == "eslint_d" then
+            require("lint").try_lint(nil, { cwd = find_project_root() })
+          else
+            require("lint").try_lint()
+          end
+        end,
+      })
+
       -- debug
       vim.api.nvim_create_user_command("LintInfo", function()
         local filetype = vim.bo.filetype
@@ -186,7 +176,14 @@ local function linter()
         else
           print("No linters configured for filetype: " .. filetype)
         end
-        print("Config: " .. find_eslint_config())
+
+        if linters[1] == "eslint_d" then
+          vim.notify(
+            "ESLint args: " .. vim.inspect(vim.tbl_get(require("lint").linters, "eslint_d", "args")),
+            vim.log.levels.INFO
+          )
+          print("Root: " .. find_project_root())
+        end
       end, {})
     end,
   }
@@ -231,6 +228,22 @@ local function formatter()
         gotmpl = { "prettierd" },
         yaml = { "prettierd" },
         dockerfile = { "hadolint" },
+        sql = { "pgformatter" },
+      },
+      formatters = {
+        pgformatter = {
+          command = "pg_format",
+          args = {
+            "--function-case=1",
+            "--keyword-case=1",
+            "--type-case=1",
+            "--comma-break",
+            "--spaces=4",
+            "--wrap-limit=80",
+            "--no-extra-line",
+          },
+          stdin = true,
+        },
       },
       format_on_save = { timeout_ms = 500, lsp_fallback = true },
     },

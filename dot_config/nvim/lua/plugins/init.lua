@@ -25,9 +25,6 @@ end
 local function clipboard_in_ssh()
   return {
     "ojroques/vim-oscyank",
-    cond = function()
-      return vim.env.SSH_CONNECTION ~= nil or vim.env.SSH_CLIENT ~= nil or vim.env.SSH_TTY ~= nil
-    end,
     config = function()
       vim.api.nvim_create_autocmd("TextYankPost", {
         pattern = "*",
@@ -36,10 +33,30 @@ local function clipboard_in_ssh()
           local event = vim.v.event
           if event.operator == "y" and (event.regname == "" or event.regname == "+" or event.regname == "*") then
             local reg = event.regname == "" and '"' or event.regname
-            vim.cmd("OSCYankRegister " .. reg)
+            pcall(function()
+              vim.cmd("OSCYankRegister " .. reg)
+            end)
           end
         end,
       })
+      vim.api.nvim_create_user_command("Osc52Debug", function()
+        local info = {
+          "=== OSC52 Debug Info ===",
+          "SSH_CONNECTION: " .. tostring(vim.env.SSH_CONNECTION),
+          "SSH_CLIENT: " .. tostring(vim.env.SSH_CLIENT),
+          "ZELLIJ: " .. tostring(vim.env.ZELLIJ),
+          "TERM: " .. tostring(vim.env.TERM),
+          "TERM_PROGRAM: " .. tostring(vim.env.TERM_PROGRAM),
+          "VTE_VERSION: " .. tostring(vim.env.VTE_VERSION),
+          "",
+          "Check Zellij version: zellij --version",
+          "Check terminal capabilities: infocmp $TERM | grep -i osc",
+          "",
+          "To test OSC52 manually in Zellij:",
+          "printf '\\033]52;c;$(echo -n \"test\" | base64)\\a'",
+        }
+        print(table.concat(info, "\n"))
+      end, {})
     end,
   }
 end
