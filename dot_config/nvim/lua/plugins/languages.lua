@@ -387,6 +387,7 @@ local function treesitter()
     build = ":TSUpdate",
     lazy = false,
     branch = "main",
+    commit = "4916d6592ede8c07973490d9322f187e07dfefac",
     config = function()
       local ensure_installed = {
         "bash",
