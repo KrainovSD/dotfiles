@@ -10,11 +10,11 @@ layout {
       plugin location="zellij:status-bar"
     }
   }
-  tab name="editor" cwd="projects/bot" {
+  tab name="editor" cwd="~/projects/bot" {
     pane
     
   }
-  tab name="runner" cwd="projects/bot" {
+  tab name="runner" cwd="~/projects/bot" {
     pane split_direction="horizontal" {
       pane
       pane split_direction="vertical" {
@@ -24,7 +24,7 @@ layout {
     }
     
   }
-  tab name="worker" cwd="projects/bot" {
+  tab name="worker" cwd="~/projects/bot" {
     pane
   }
 }

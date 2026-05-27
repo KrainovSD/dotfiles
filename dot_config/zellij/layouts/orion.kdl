@@ -10,11 +10,11 @@ layout {
       plugin location="zellij:status-bar"
     }
   }
-  tab name="editor" cwd="projects/orion" {
+  tab name="editor" cwd="~/projects/orion" {
     pane
     
   }
-  tab name="runner" cwd="projects/orion" {
+  tab name="runner" cwd="~/projects/orion" {
     pane split_direction="horizontal" {
       pane
       pane split_direction="vertical" {
@@ -24,7 +24,7 @@ layout {
     }
     
   }
-  tab name="worker" cwd="projects/orion" {
+  tab name="worker" cwd="~/projects/orion" {
     pane
   }
 }

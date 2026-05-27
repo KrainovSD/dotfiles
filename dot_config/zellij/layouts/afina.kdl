@@ -10,11 +10,11 @@ layout {
       plugin location="zellij:status-bar"
     }
   }
-  tab name="editor" cwd="projects/afina-new" {
+  tab name="editor" cwd="~/projects/afina-new" {
     pane
     
   }
-  tab name="runner" cwd="projects/afina-new" {
+  tab name="runner" cwd="~/projects/afina-new" {
     pane split_direction="horizontal" {
       pane
       pane split_direction="vertical" {
@@ -24,7 +24,7 @@ layout {
     }
     
   }
-  tab name="worker" cwd="projects/afina-new" {
+  tab name="worker" cwd="~/projects/afina-new" {
     pane
   }
 }

@@ -29,6 +29,7 @@ local function lsp()
         "docker-compose-language-service",
         "yaml-language-server",
         "angular-language-server",
+        "jsonnet-language-server",
         -- "csharp-language-server",
         "omnisharp",
         "phpactor",
@@ -92,6 +93,7 @@ local function lsp()
         filetypes = {
           "html",
           "gotmpl",
+          "ftl",
         },
       })
 
@@ -433,12 +435,18 @@ local function treesitter()
         },
       })
       vim.filetype.add({
+        extension = {
+          ftl = "ftl",
+        },
+      })
+      vim.filetype.add({
         pattern = {
           ["^.env"] = "env",
           [".env"] = "env",
         },
       })
       vim.treesitter.language.register("html", "gotmpl")
+      vim.treesitter.language.register("html", "ftl")
       vim.api.nvim_command("autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>")
       vim.api.nvim_create_autocmd("FileType", {
         callback = function(args)

@@ -13,69 +13,69 @@ keybinds {
         // bind "Alt Left" { GoToPreviousTab; }
         // bind "Alt Right" { GoToNextTab; }
         bind "Ctrl Left" {
-            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm" {
                 name "move_focus_or_tab";
                 payload "left";
-                move_mod "ctrl"; 
-                use_arrow_keys "false"; 
+                move_mod "ctrl";
+                use_arrow_keys "false";
             };
         }
         bind "Ctrl Down" {
-            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
-                name "move_focus";
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm" {
+                name "move_focus_or_tab";
                 payload "down";
                 move_mod "ctrl";
                 use_arrow_keys "false";
             };
         }
         bind "Ctrl Up" {
-            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
-                name "move_focus";
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm" {
+                name "move_focus_or_tab";
                 payload "up";
                 move_mod "ctrl";
                 use_arrow_keys "false";
             };
         }
         bind "Ctrl Right" {
-            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm" {
                 name "move_focus_or_tab";
                 payload "right";
-                move_mod "ctrl"; 
+                move_mod "ctrl";
                 use_arrow_keys "false";
             };
         }
         bind "Ctrl h" {
-            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm" {
                 name "move_focus_or_tab";
                 payload "left";
-                move_mod "ctrl"; 
-                use_arrow_keys "false"; 
+                move_mod "ctrl";
+                use_arrow_keys "false";
             };
         }
         bind "Ctrl j" {
-            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
-                name "move_focus";
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm" {
+                name "move_focus_or_tab";
                 payload "down";
                 move_mod "ctrl";
                 use_arrow_keys "false";
             };
         }
         bind "Ctrl k" {
-            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
-                name "move_focus";
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm" {
+                name "move_focus_or_tab";
                 payload "up";
                 move_mod "ctrl";
                 use_arrow_keys "false";
             };
         }
         bind "Ctrl l" {
-            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.3.0.wasm" {
+            MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm" {
                 name "move_focus_or_tab";
                 payload "right";
-                move_mod "ctrl"; 
+                move_mod "ctrl";
                 use_arrow_keys "false";
             };
-        } 
+        }
     }
     resize {
         bind "Ctrl n" { SwitchToMode "Locked"; }

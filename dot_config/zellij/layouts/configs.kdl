@@ -10,19 +10,19 @@ layout {
       plugin location="zellij:status-bar"
     }
   }
-  tab name="nvim" cwd=".config/nvim" {
+  tab name="nvim" cwd="~/.config/nvim" {
     pane 
   }
   tab name="zsh" {
     pane 
   }
-  tab name="hyprland" cwd=".config/hypr" {
+  tab name="hyprland" cwd="~/.config/hypr" {
     pane 
   }
-  tab name="zellij" cwd=".config/zellij" {
+  tab name="zellij" cwd="~/.config/zellij" {
     pane 
   }
-  tab name=".local/share/chezmoi" {
+  tab name="~/.local/share/chezmoi" {
     pane 
   }
   tab name="others" {
