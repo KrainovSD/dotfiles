@@ -12,6 +12,9 @@ keybinds {
         bind "Alt l" { GoToNextTab; }
         // bind "Alt Left" { GoToPreviousTab; }
         // bind "Alt Right" { GoToNextTab; }
+
+        // vim-zellij-navigator: if vim/nvim is running in the pane,
+        // forwards the key to it; otherwise moves zellij focus.
         bind "Ctrl Left" {
             MessagePlugin "file:/home/krainov/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm" {
                 name "move_focus_or_tab";
