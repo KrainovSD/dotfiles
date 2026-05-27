@@ -44,7 +44,7 @@ cargo build --release --target wasm32-wasip1
 
 # Copy the output
 cp target/wasm32-wasip1/release/vim-zellij-navigator.wasm \
-   ~/.config/zellij/plugins/vim-zellij-navigator-0.4.0.wasm
+   ~/.config/zellij/plugins/vim-zellij-navigator-0.5.1.wasm
 ```
 
 ### Updating when zellij version changes
@@ -55,7 +55,24 @@ cp target/wasm32-wasip1/release/vim-zellij-navigator.wasm \
 4. Copy the WASM to `~/.config/zellij/plugins/`
 5. Update the path in `config.kdl`
 
-## Changes from original 0.3.0
+## Changelog
+
+### 0.5.0 — fix double-move in multiplayer sessions
+
+**Problem:** when a second client attaches to a zellij session and then detaches,
+zellij does not kill the plugin instance created for that client ([zellij-org/zellij#4064](https://github.com/zellij-org/zellij/issues/4064)).
+The orphaned instance keeps receiving `MessagePlugin` pipe messages alongside the
+active instance, causing `move_focus_or_tab` to fire twice per keypress — focus
+skips over a pane or behaves erratically.
+
+**Fix:** subscribe to `EventType::ListClients` and call `list_clients()` on load.
+In the `Event::ListClients` handler, check `is_current_client` across all clients:
+if no client claims this plugin instance, set `has_active_client = false`.
+The `pipe()` handler skips command execution when the flag is false.
+
+Inspired by [hiasr/vim-zellij-navigator#35](https://github.com/hiasr/vim-zellij-navigator/pull/35).
+
+### Changes from original 0.3.0
 
 - **Synchronous API:** replaced async `list_clients()` + `Event::ListClients` + command queue
   with synchronous `get_focused_pane_info()` + `get_pane_running_command()`
