@@ -15,16 +15,12 @@ layout {
     
   }
   tab name="runner" cwd="~/projects" {
-    pane split_direction="horizontal" {
-      pane
-      pane split_direction="vertical" {
+    pane split_direction="vertical" {
+      pane split_direction="horizontal" {
         pane
         pane
       }
-    }
-    
-  }
-  tab name="worker" cwd="~/projects" {
       pane
+    }
   }
 }

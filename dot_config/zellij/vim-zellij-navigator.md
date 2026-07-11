@@ -44,7 +44,7 @@ cargo build --release --target wasm32-wasip1
 
 # Copy the output
 cp target/wasm32-wasip1/release/vim-zellij-navigator.wasm \
-   ~/.config/zellij/plugins/vim-zellij-navigator-0.5.1.wasm
+   ~/.config/zellij/plugins/vim-zellij-navigator-0.5.2.wasm
 ```
 
 ### Updating when zellij version changes
