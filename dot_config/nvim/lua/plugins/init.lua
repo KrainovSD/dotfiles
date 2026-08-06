@@ -1000,9 +1000,13 @@ local function indent_blankline()
           char = "|",
         },
         scope = {
-          enabled = false,
+          -- enabled = false,
+          -- highlight = {
+          --   "IndentBlanklineCurrentScope",
+          -- },
+          enabled = true,
           highlight = {
-            "IndentBlanklineCurrentScope",
+            "IblScope",
           },
           show_start = false,
           show_end = false,

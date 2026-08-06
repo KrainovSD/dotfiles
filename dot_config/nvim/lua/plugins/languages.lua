@@ -52,6 +52,8 @@ local function lsp()
         "yamlfmt",
         "sql-formatter",
         "pgformatter",
+
+        "delve",
       }
 
       -- Функция для установки всех инструментов
@@ -466,6 +468,75 @@ local function treesitter()
   }
 end
 
+local function debugger()
+  return {
+    debugger = {
+      {
+        "rcarriga/nvim-dap-ui",
+        dependencies = {
+          "mfussenegger/nvim-dap",
+          "nvim-neotest/nvim-nio",
+        },
+        lazy = false,
+        config = function()
+          local dapui = require("dapui")
+          local dap = require("dap")
+          dapui.setup()
+          -- dap.listeners.after.event_initialized["dapui_config"] = function()
+          --   dapui.open()
+          -- end
+          -- dap.listeners.before.event_terminated["dapui_config"] = function()
+          --   dapui.close()
+          -- end
+          -- dap.listeners.before.event_exited["dapui_config"] = function()
+          --   dapui.close()
+          -- end
+
+          vim.keymap.set("n", "<F5>", dap.continue, { desc = "Start/Continue debugging" })
+          vim.keymap.set("n", "<F1>", dap.step_into, { desc = "Step into" })
+          vim.keymap.set("n", "<F2>", dap.step_over, { desc = "Step over" })
+          vim.keymap.set("n", "<F3>", dap.step_out, { desc = "Step out" })
+          vim.keymap.set("n", "<leader>xs", dap.continue, { desc = "[s]tart/continue debugging" })
+          vim.keymap.set("n", "<leader>xi", dap.step_into, { desc = "Step [i]nto" })
+          vim.keymap.set("n", "<leader>xo", dap.step_over, { desc = "Step [o]ver" })
+          vim.keymap.set("n", "<leader>xt", dap.step_out, { desc = "Step ou[t]" })
+          vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "Toggle breakpoint" })
+          vim.keymap.set("n", "<leader>xu", dapui.toggle)
+          vim.keymap.set("n", "<leader>xc", dap.close, { desc = "Stop debugging" })
+          -- vim.keymap.set("n", "<leader>dh", require("dap.ui.widgets").hover, { desc = "Hover variable" })
+          vim.keymap.set("n", "<leader>xh", function()
+            dapui.eval(nil, { enter = true })
+          end, { desc = "Hover variable (dapui)" })
+          vim.keymap.set("n", "<leader>xe", function()
+            dapui.eval(vim.fn.input("Expression: "), { enter = true })
+          end, { desc = "Eval expression" })
+        end,
+      },
+    },
+    go = {
+      "leoluz/nvim-dap-go",
+      dependencies = "mfussenegger/nvim-dap",
+      config = function()
+        require("dap-go").setup({
+          dap_configurations = {
+            {
+              type = "go",
+              name = "Launch plugin-builder",
+              request = "launch",
+              mode = "debug",
+              program = "${workspaceFolder}/packages/plugin-builder",
+              cwd = "${workspaceFolder}/packages/plugin-builder",
+              args = { "../tests/read-db" },
+            },
+          },
+        })
+      end,
+    },
+  }
+end
+
+local debugger_plugins = debugger()
+
 return {
   lsp(),
   linter(),
@@ -473,4 +544,6 @@ return {
   snippets(),
   autocomplete(),
   treesitter(),
+  debugger_plugins.debugger,
+  debugger_plugins.go,
 }
