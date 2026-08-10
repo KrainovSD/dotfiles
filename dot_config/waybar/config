@@ -22,9 +22,7 @@
         	"custom/left_div#4",
         	"cpu",
         	"custom/left_inv#1",
-        	"custom/left_div#5",
-        	"custom/distro",
-        	"custom/right_div#2",
+        	"group/powermenu",
         	"custom/right_inv#1",
         	"idle_inhibitor",
         	"clock#time",
@@ -33,7 +31,7 @@
         	"custom/right_div#4",
         	"network",
         	"bluetooth",
-        	"custom/system_update",
+        	// "custom/system_update",
         	"custom/right_div#5"
 	],
 	"modules-right": [
@@ -45,7 +43,7 @@
         	"custom/left_div#8",
 		"battery",
 		"custom/left_inv#2",
-		"custom/power_menu"
+		"custom/notifications"
 	],
 
 	"layer": "top",
