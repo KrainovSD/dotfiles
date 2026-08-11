@@ -1,130 +1,42 @@
-# # before all
-# base
-# linux
-# linux-firmware
-# sudo
-# vim
-# ## wifi
-# iwd
-# git
-# git-lfs
-# openssh
-# chezmoi
-# dhcpcd
+# Core System
+base, base-devel, linux, linux-firmware, intel-ucode, sudo, pacman-contrib, reflector
 
-# core
-go
-lsd
-bat
-nvim
-base-devel
-cmake
-fzf
-luarocks
-lua51
-imagemagick
-ctags
-snappy
-bzip2
-zlib
-lz4
-zstd
-gflags
-gcc
-clang
-numactl
-zsh
-zsh-completions
+# Shells
+bash, zsh, zsh-completions, nano, vim, neovim
 
-# hypr
-hyprland
-# color picker
-hyprpicker
-hyprlock
-hypridle
+# Networking
+networkmanager, iwd, dhcpcd, openssh, bind, bluez, bluez-utils, nmap, dnsutils, openvpn
 
-# graphics
-## wallpaper
-swww
-hyprcursor
-qt5ct
-qt5-wayland
-qt6ct
-qt6-wayland
-xdg-desktop-portal-hyprland
-xdg-desktop-portal
-xdg-desktop-portal-gtk
-nwg-look
-sddm
-qt5-graphicaleffects
-qt5-quickcontrols2
-qt5-svg
+# Hyprland & Wayland
+hyprland, hyprcursor, hypridle, hyprlock, hyprpicker, uwsm, sddm, waybar, wofi, dunst, grim, slurp, wf-recorder, wl-clipboard, xdg-desktop-portal, xdg-desktop-portal-gtk, xdg-desktop-portal-hyprland
 
-# tech
-libnewt
-## session manager
-uwsm
-## sudo auth agent
-polkit-kde-agent
-wl-clipboard
-## just funny trash
-cmatrix
-## pretty ls
-lsd
-## pretty cat
-bat
-## system info
-fastfetch
-bluez
-bluez-utils
-## screenshots
-grim
-## select viewport for screenshots
-slurp
-## video record
-wf-recorder
-ttf-0xproto-nerd
-pacman-contrib
-brightnessctl
-uv
-docker
-nvm
-jq
-zellij
-k9s
-dnsutils
+# Themes & Fonts
+qt5ct, qt5-graphicaleffects, qt5-quickcontrols2, qt5-svg, qt5-wayland, qt6ct, qt6-wayland, nwg-look, papirus-icon-theme, ttf-0xproto-nerd, ttf-firacode-nerd, terminus-font
 
-# audio
-## driver
-pipewire
-## bluetooth
-pipewire-pulse
-pipewire-audio
-## manager
-wireplumber
-## switch audio inputs
-pavucontrol
+# Audio
+pipewire, pipewire-audio, pipewire-pulse, wireplumber, pavucontrol
 
-# applications
-## file manager
-thunar
-tumbler
-thunar-archive-plugin
-thunar-media-tags-plugin
-## archive
-file-roller
-## media viewer
-mpv
-firefox
-keepassxc
-mattermost-desktop
-## menu
-wofi
-kitty
-waybar
-code
-networkmanager
-## notification UI
-dunst
+# Languages & Compilers
+gcc, clang, cmake, make, go, tinygo, rust, rust-wasm, dotnet-sdk, php, lua51, luarocks, mingw-w64-gcc, protobuf, protobuf-c
 
+# Databases & Infrastructure
+postgresql, valkey, docker, docker-buildx, docker-compose, kubectl, kustomize, k9s
+
+# DevOps & SysAdmin
+aws-cli-v2, chezmoi, git, git-lfs, git-filter-repo
+
+# Data Processing & GIS
+gdal, osm2pgsql, shapelib, libvips, imagemagick, resvg, poppler
+
+# Developer Utilities
+ctags, fd, ripgrep, fzf, jq, bat, lsd, fastfetch, btop, cmatrix, brightnessctl, zellij, yazi, trash-cli, wget, claude-code 
+
+# System Libraries
+libnewt, liburing, snappy, bzip2, zlib, lz4, zstd, gflags, numactl, rapidjson, boost
+
+# Applications
+chromium, firefox, keepassxc, mattermost-desktop, thunar, tumbler, thunar-archive-plugin, thunar-media-tags-plugin, file-roller, mpv, kitty, pavucontrol, mypaint, syncthing
+
+# Package Managers
+uv, mkcert
 
