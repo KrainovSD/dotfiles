@@ -33,9 +33,9 @@ done <"$PACKAGES_FILE"
 packages_to_install=($(echo "${packages_to_install[@]}" | tr ' ' '\n' | awk '!seen[$0]++' | tr '\n' ' '))
 
 if [ ${#packages_to_install[@]} -gt 0 ]; then
-    colored_echo "📦 Устанавливаем ${#packages_to_install[@]} пакетов..."
-    echo "Список пакетов: ${packages_to_install[*]}"
+    colored_echo "📦 Installing ${#packages_to_install[@]} packages..."
+    echo "Packages: ${packages_to_install[*]}"
     sudo pacman -S --noconfirm --needed "${packages_to_install[@]}"
 else
-    echo "⚠️ Нет пакетов для установки"
+    echo "⚠️ No packages for installing"
 fi
