@@ -197,6 +197,7 @@ pactl set-default-sink Name
 - entry point to exit from uwsm session is `uwsm stop`
 - exit from login manager to terminal `Ctrl Alt F2`
 - if pacstrap install ended with trouble
+- autostart apps locate in `~/.config/autostart`
 
 ```bash
 # try to change mirror in /etc/pacman.d/mirrorlist to https://mirror.yandex.ru/archlinux/$repo/os/$arch
