@@ -111,6 +111,14 @@ dmesg | grep microcode
 cat /proc/cpuinfo | grep microcode
 ```
 
+## Wi-fi
+
+```bash
+sudo pacman -S wireless-regdb
+# uncomment region
+sudo -E nvim /etc/conf.d/wireless-regdom
+```
+
 ## User
 
 ```bash

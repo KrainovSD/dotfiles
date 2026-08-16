@@ -30,7 +30,7 @@ Name=en*
 DHCP=yes
 
 [Link]
-RequiredForOnline=no
+RequiredForOnline=yes
 EOF
 cat <<'EOF' | sudo tee /etc/systemd/network/40-wireless.network >/dev/null
 [Match]
@@ -41,15 +41,24 @@ Name=wl*
 DHCP=yes
 
 [Link]
-RequiredForOnline=no
+RequiredForOnline=yes
 EOF
 
 sudo systemctl enable --now systemd-networkd
 sudo networkctl reload
+
+WAIT_ONLINE_SERVICE="systemd-networkd-wait-online.service"
+sudo mkdir -p "/etc/systemd/system/$WAIT_ONLINE_SERVICE.d/"
+sudo tee "/etc/systemd/system/$WAIT_ONLINE_SERVICE.d/override.conf" >/dev/null <<'EOF'
+[Service]
+ExecStart=
+ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any --timeout=15
+EOF
+sudo systemctl daemon-reload
+
 DNS_LINE="DNS=8.8.8.8#dns.google 8.8.4.4#dns.google 2001:4860:4860::8888#dns.google 2001:4860:4860::8844#dns.google"
-if ! grep -qF "$DNS_LINE" /etc/systemd/resolved.conf; then
-    sudo sed -i "/^\[Resolve\]$/a $DNS_LINE" /etc/systemd/resolved.conf
-fi
+sudo sed -i '/^DNS=/d' /etc/systemd/resolved.conf
+sudo sed -i "/^\[Resolve\]$/a $DNS_LINE" /etc/systemd/resolved.conf
 sudo systemctl enable --now systemd-resolved
 sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 sudo systemctl restart systemd-resolved
