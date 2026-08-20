@@ -49,8 +49,7 @@ EOF
 
 colored_echo "init login session ..."
 sudo pacman -S --noconfirm --needed sddm qt5-graphicaleffects qt5-quickcontrols2 qt5-svg
-systemctl enable sddm
-systemctl start sddm
+systemctl enable --now sddm
 tar -xf ~/static/sddm/enfield.tar.gz
 tar -xf ~/static/sddm/last-of-us.tar.gz
 sudo cp -r ~/static/sddm/enfield /usr/share/sddm/themes/enfield
@@ -64,8 +63,7 @@ hyprctl dispatch exec awww-daemon
 
 colored_echo "init lock ..."
 sudo pacman -S --noconfirm --needed hypridle
-systemctl --user enable hypridle.service
-systemctl --user start hypridle.service
+systemctl --user enable --now hypridle.service
 if ! grep -q "^HandleLidSwitch" /etc/systemd/logind.conf; then
     sudo sed -i '/^\[Login\]$/a HandleLidSwitch=lock' /etc/systemd/logind.conf
 else
@@ -78,9 +76,10 @@ else
 fi
 systemctl restart systemd-logind
 
+systemctl --user enable --now hyprpolkitagent.service
+
 colored_echo "init ssh ..."
-sudo systemctl enable sshd
-sudo systemctl start sshd
+sudo systemctl enable --now sshd
 
 colored_echo "init music ..."
 sudo pacman -S --noconfirm --needed pipewire pipewire-pulse pipewire-audio wireplumber
@@ -90,8 +89,7 @@ pactl info
 # bluetooth
 colored_echo "init bluetooth ..."
 sudo pacman -S --noconfirm --needed bluez bluez-utils
-sudo systemctl enable bluetooth.service
-sudo systemctl start bluetooth.service
+sudo systemctl enable --now bluetooth.service
 if ! grep -q "AutoEnabled=true" /etc/systemd/logind.conf; then
     sudo sed -i '/^\[Policy\]$/a AutoEnabled=true' /etc/systemd/logind.conf
 fi
@@ -124,8 +122,7 @@ fi
 # init docker
 colored_echo "installing docker ..."
 sudo pacman -S --noconfirm --needed docker
-sudo systemctl enable docker
-sudo systemctl start docker
+sudo systemctl enable --now docker
 
 # netbird
 colored_echo "installing netbird  ..."

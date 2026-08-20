@@ -183,30 +183,23 @@ pactl set-default-sink Name
 
 - clear font cache: `fc-cache -fv`
 - visual test of sddm theme `sddm-greeter --test-mode --theme /usr/share/sddm/themes/sugar-candy`
-- change backround: awww img [path]
-- cursors in `usr/share/icons` and apply through `hyprctl setcursor "[name] [size]"`
-- check battery `cat /sys/class/power_supply/BAT*/capacity`
 - reboot in emergency shell `echo b > /proc/sysrq-trigger`
-- check RAM `free -h`
-- check free disk `df -h`
 - find bin file to exec `pacman -Qlq package | grep /usr/bin/`
 - unpack archive `tar -xf archive.tag.xz`
 - if has trouble with keyboard input `loadkeys us` and then check KEYMAP in `/etc/vconsole.conf`
-- check permission of file `stat -c "%a" [file]`
 - gtk theme [store](https://www.gnome-look.org/)
 - entry point to exit from uwsm session is `uwsm stop`
-- exit from login manager to terminal `Ctrl Alt F2`
-- if pacstrap install ended with trouble
+- open TTY - `Ctrl Alt F[Number of TTY]`
 - autostart apps locate in `~/.config/autostart`
+- if pacstrap install ended with trouble
 
 ```bash
 # try to change mirror in /etc/pacman.d/mirrorlist to https://mirror.yandex.ru/archlinux/$repo/os/$arch
 rm -rf /var/cache/pacman/pkg/*
 rm -rf /var/lib/pacman/sync/*
 rm -rf /mnt/var/cache/pacman/pkg/* 2>/dev/null
-pacman-key --init
-pacman-key --populate archlinux
-pacman-key --refresh-keys
-pacman -Syyyy
-pacman -S archlinux-keyring
+pacman-key --init # create local GnuPG
+pacman-key --populate archlinux # add data to local GnuPG
+pacman -S archlinux-keyring # update package for actual --refresh-keys
+pacman-key --refresh-keys # update data in GnuPG
 ```

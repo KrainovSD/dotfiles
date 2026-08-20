@@ -9,7 +9,7 @@ iwd, openssh, bind, bluez, bluez-utils, nmap, dnsutils, openvpn
 # dhcpcd
 
 # Hyprland & Wayland
-hyprland, hyprcursor, hypridle, hyprlock, hyprpicker, uwsm, sddm, waybar, wofi, dunst, grim, slurp, wf-recorder, wl-clipboard, xdg-desktop-portal, xdg-desktop-portal-gtk, xdg-desktop-portal-hyprland, awww
+hyprland, hyprcursor, hypridle, hyprlock, hyprpicker, uwsm, sddm, waybar, wofi, dunst, grim, slurp, wf-recorder, wl-clipboard, xdg-desktop-portal, xdg-desktop-portal-gtk, xdg-desktop-portal-hyprland, awww, hyprpolkitagent
 
 # Themes & Fonts
 qt5ct, qt5-graphicaleffects, qt5-quickcontrols2, qt5-svg, qt5-wayland, qt6ct, qt6-wayland, nwg-look, papirus-icon-theme, ttf-0xproto-nerd, ttf-firacode-nerd, terminus-font, noto-fonts, noto-fonts-cjk, noto-fonts-emoji, ttf-jetbrains-mono-nerd, ttf-font-awesome
