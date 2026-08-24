@@ -56,8 +56,8 @@ ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any --timeout=15
 EOF
 sudo systemctl daemon-reload
 
-DNS_LINE="DNS=8.8.8.8#dns.google 8.8.4.4#dns.google 2001:4860:4860::8888#dns.google 2001:4860:4860::8844#dns.google"
-sudo sed -i '/^DNS=/d' /etc/systemd/resolved.conf
+DNS_LINE="FallbackDNS=8.8.8.8 8.8.4.4 2001:4860:4860::8888 2001:4860:4860::8844"
+sudo sed -i '/^FallbackDNS=/d' /etc/systemd/resolved.conf
 sudo sed -i "/^\[Resolve\]$/a $DNS_LINE" /etc/systemd/resolved.conf
 sudo systemctl enable --now systemd-resolved
 sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
