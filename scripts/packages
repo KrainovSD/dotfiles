@@ -30,7 +30,7 @@ aws-cli-v2, chezmoi, git, git-lfs, git-filter-repo
 gdal, osm2pgsql, shapelib, libvips, imagemagick, resvg, poppler
 
 # Developer Utilities
-ctags, fd, ripgrep, fzf, jq, bat, lsd, fastfetch, btop, cmatrix, brightnessctl, zellij, yazi, trash-cli, wget, claude-code 
+ctags, fd, ripgrep, fzf, jq, bat, lsd, fastfetch, btop, cmatrix, brightnessctl, zellij, yazi, trash-cli, wget 
 
 # System Libraries
 libnewt, liburing, snappy, bzip2, zlib, lz4, zstd, gflags, numactl, rapidjson, boost
