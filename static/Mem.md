@@ -34,7 +34,7 @@ mkdir -p /mnt/home
 mount /dev/mapper/home /mnt/home
 mount /dev/EFI /mnt/boot
 swapon /dev/swap
-pacstrap /mnt base linux linux-firmware sudo vim iwd git git-lfs openssh chezmoi dhcpcd
+pacstrap /mnt base linux linux-firmware sudo vim iwd git git-lfs openssh chezmoi tinyssh
 # create table of file system
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
@@ -130,6 +130,33 @@ passwd krainov
 
 ```
 
+# SSH in initramfs
+
+- install tinyssh from pacman
+- install aur
+- install mkinitcpio-systemd-extras from aur
+- add hooks to initramfs `/etc/mkinitcpio.conf`
+
+```md
+HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block > sd-network sd-tinyssh < sd-encrypt filesystems fsck)
+SD_TINYSSH_COMMAND="systemd-tty-ask-password-agent --query" <
+SD_NETWORK_CONFIG=/etc/systemd/network-initramfs
+```
+
+- create configuration for sd-network with MAC adress (`ip link show`) instead of default ip links `/etc/systemd/network-initramfs/10-wired.network`
+
+```
+[Match]
+MACAddress=aa:bb:cc:dd:ee:ff
+
+[Network]
+DHCP=yes
+```
+
+- put ssh public key for tinyssh `/etc/tinyssh/root_key`
+- add parameter `rootflags=x-systemd.device-timeout=0` to boot loader `/boot/loader/entries/*.conf` in the end of options line
+- rebuild kernel with new init config: `sudo mkinitcpio -P`
+
 # Internet
 
 - connect to wifi by your own hand
@@ -202,4 +229,12 @@ pacman-key --init # create local GnuPG
 pacman-key --populate archlinux # add data to local GnuPG
 pacman -S archlinux-keyring # update package for actual --refresh-keys
 pacman-key --refresh-keys # update data in GnuPG
+```
+
+- change target sound device
+
+```bash
+# required pavucontrol, pipewire, pipewire-pulse, pipewire-audio
+pactl list sinks short
+pactl set-default-sink [name]
 ```
