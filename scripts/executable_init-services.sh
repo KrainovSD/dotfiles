@@ -6,6 +6,10 @@ colored_echo() {
     echo -e "\033[1;32m$*\033[0m"
 }
 
+warn_echo() {
+    echo -e "\033[1;33m[WARN]\033[0m $*"
+}
+
 # init dirs
 mkdir -p ~/sources
 mkdir -p ~/projects
@@ -15,11 +19,11 @@ mkdir -p ~/tmp
 mkdir -p ~/screen
 
 colored_echo "init theme ..."
-tar -xf ~/static/cursors/Future-cyan.tar.gz
-tar -xf ~/static/icons/Papirus-Dark.tar.gz
-tar -xf ~/static/themes/Gruvbox-Dark.tar.gz
-tar -xf ~/static/themes/Gruvbox-Dark-Soft.tar.gz
-tar -xf ~/static/themes/Gruvbox-Dark-Medium.tar.gz
+tar -xf ~/static/cursors/Future-cyan.tar.gz -C ~/static/cursors/
+tar -xf ~/static/icons/Papirus-Dark.tar.gz -C ~/static/icons/
+tar -xf ~/static/themes/Gruvbox-Dark.tar.gz -C ~/static/themes/
+tar -xf ~/static/themes/Gruvbox-Dark-Soft.tar.gz -C ~/static/themes/
+tar -xf ~/static/themes/Gruvbox-Dark-Medium.tar.gz -C ~/static/themes/
 
 sudo cp -r ~/static/themes/* /usr/share/themes/
 sudo cp -r ~/static/icons/* /usr/share/icons/
@@ -50,8 +54,8 @@ EOF
 colored_echo "init login session ..."
 sudo pacman -S --noconfirm --needed sddm qt5-graphicaleffects qt5-quickcontrols2 qt5-svg
 systemctl enable --now sddm
-tar -xf ~/static/sddm/enfield.tar.gz
-tar -xf ~/static/sddm/last-of-us.tar.gz
+tar -xf ~/static/sddm/enfield.tar.gz -C ~/static/sddm/
+tar -xf ~/static/sddm/last-of-us.tar.gz -C ~/static/sddm/
 sudo cp -r ~/static/sddm/enfield /usr/share/sddm/themes/enfield
 sudo cp -r ~/static/sddm/last-of-us /usr/share/sddm/themes/last-of-us
 sudo ln -sf ~/.config/sddm/sddm.conf /etc/sddm.conf
@@ -59,7 +63,11 @@ chmod 655 ~/.config/sddm/sddm.conf
 
 colored_echo "init wallpapers ..."
 sudo pacman -S --noconfirm --needed awww
-hyprctl dispatch exec awww-daemon
+if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+    hyprctl dispatch exec awww-daemon
+else
+    warn_echo "skip awww-daemon, no graphical environment"
+fi
 
 colored_echo "init lock ..."
 sudo pacman -S --noconfirm --needed hypridle
@@ -74,11 +82,13 @@ if ! grep -q "^HandleLidSwitchExternalPower" /etc/systemd/logind.conf; then
 else
     sudo sed -i 's/^HandleLidSwitchExternalPower=.*/HandleLidSwitchExternalPower=lock/' /etc/systemd/logind.conf
 fi
-systemctl restart systemd-logind
+# in the end
+# systemctl restart systemd-logind
 
 systemctl --user enable --now hyprpolkitagent.service
 
 colored_echo "init ssh ..."
+sudo pacman -S --noconfirm --needed openssh
 sudo systemctl enable --now sshd
 
 colored_echo "init music ..."
@@ -90,9 +100,6 @@ pactl info
 colored_echo "init bluetooth ..."
 sudo pacman -S --noconfirm --needed bluez bluez-utils
 sudo systemctl enable --now bluetooth.service
-if ! grep -q "AutoEnabled=true" /etc/systemd/logind.conf; then
-    sudo sed -i '/^\[Policy\]$/a AutoEnabled=true' /etc/systemd/logind.conf
-fi
 # bluetoothctl power on
 # bluetoothctl agent on
 # bluetoothctl default-agent
@@ -127,8 +134,9 @@ sudo systemctl enable --now docker
 # netbird
 colored_echo "installing netbird  ..."
 yay -S --needed --noconfirm netbird
-if ! command -v yay &>/dev/null; then
-    sudo netbird service install
-
-fi
+sudo netbird service install
 sudo netbird service start
+
+# upower
+sudo pacman -S --noconfirm --needed upower
+sudo systemctl enable --now upower
