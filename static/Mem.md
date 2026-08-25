@@ -139,9 +139,13 @@ passwd krainov
 
 ```md
 HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block > sd-network sd-tinyssh < sd-encrypt filesystems fsck)
-SD_TINYSSH_COMMAND="systemd-tty-ask-password-agent --query" <
+SD_TINYSSH_COMMAND="systemd-tty-ask-password-agent --query --watch"
+SD_TINYSSH_AUTHORIZED_KEYS=/root/.ssh/authorized_keys
 SD_NETWORK_CONFIG=/etc/systemd/network-initramfs
 ```
+
+- generate tinyssh host keys (server identity, one-time): `tinysshd-makekey /etc/tinyssh/sshkeydir`
+- put **ed25519** client public key into `/root/.ssh/authorized_keys` (sd-tinyssh only accepts `ssh-ed25519` keys, RSA/ECDSA are silently ignored)
 
 - create configuration for sd-network with MAC adress (`ip link show`) instead of default ip links `/etc/systemd/network-initramfs/10-wired.network`
 
@@ -153,8 +157,7 @@ MACAddress=aa:bb:cc:dd:ee:ff
 DHCP=yes
 ```
 
-- put ssh public key for tinyssh `/etc/tinyssh/root_key`
-- add parameter `rootflags=x-systemd.device-timeout=0` to boot loader `/boot/loader/entries/*.conf` in the end of options line
+- add parameters `rd.luks.options=timeout=0 rootflags=x-systemd.device-timeout=0` to boot loader `/boot/loader/entries/*.conf` in the end of options line
 - rebuild kernel with new init config: `sudo mkinitcpio -P`
 
 # Internet
