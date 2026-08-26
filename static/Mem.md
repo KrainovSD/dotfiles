@@ -133,15 +133,16 @@ passwd krainov
 # SSH in initramfs
 
 - install tinyssh from pacman
-- install aur
 - install mkinitcpio-systemd-extras from aur
-- add hooks to initramfs `/etc/mkinitcpio.conf`
+- add hooks, env and machine-id (for DHCP ID) to initramfs `/etc/mkinitcpio.conf`
 
 ```md
-HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block > sd-network sd-tinyssh < sd-encrypt filesystems fsck)
+FILES=(/etc/machine-id)
+HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block **sd-network** **sd-tinyssh** sd-encrypt filesystems fsck)
 SD_TINYSSH_COMMAND="systemd-tty-ask-password-agent --query --watch"
 SD_TINYSSH_AUTHORIZED_KEYS=/root/.ssh/authorized_keys
 SD_NETWORK_CONFIG=/etc/systemd/network-initramfs
+SD_TINYSSH_PORT=2222
 ```
 
 - generate tinyssh host keys (server identity, one-time): `tinysshd-makekey /etc/tinyssh/sshkeydir`
