@@ -95,6 +95,16 @@ local function lsp()
         workspace_required = true,
       })
 
+      vim.lsp.config("lua_ls", {
+        settings = {
+          Lua = {
+            runtime = { version = "LuaJIT" },
+            workspace = { checkThirdParty = false },
+            completion = { callSnippet = "Replace" },
+          },
+        },
+      })
+
       vim.lsp.config("html", {
         filetypes = {
           "html",
@@ -117,6 +127,20 @@ local function lsp()
       vim.keymap.set("n", "<leader>fe", vim.diagnostic.setloclist)
       vim.keymap.set("n", "<leader>fea", vim.diagnostic.setqflist)
     end,
+  }
+end
+
+local function lua_dev()
+  return {
+    "folke/lazydev.nvim",
+    ft = "lua",
+    cmd = "LazyDev",
+    opts = {
+      library = {
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+        "lazy.nvim",
+      },
+    },
   }
 end
 
@@ -324,6 +348,7 @@ local function autocomplete()
           ["<CR>"] = cmp.mapping.confirm({ select = true }),
         }),
         sources = cmp.config.sources({
+          { name = "lazydev", group_index = 0 },
           { name = "nvim_lsp" },
           { name = "luasnip" },
           { name = "buffer" },
@@ -397,6 +422,64 @@ local function autocomplete()
           },
         }),
       })
+    end,
+  }
+end
+
+local function treesitter_manager()
+  return {
+    "romus204/tree-sitter-manager.nvim",
+    config = function()
+      require("tree-sitter-manager").setup({
+        ensure_installed = {
+          "bash",
+          "c",
+          "html",
+          "vim",
+          "lua",
+          "rust",
+          "python",
+          "yaml",
+          "vimdoc",
+          "vue",
+          "svelte",
+          "javascript",
+          "typescript",
+          "markdown",
+          "gleam",
+          "hyprlang",
+          "helm",
+          "gotmpl",
+          "go",
+          "css",
+          "scss",
+        },
+        auto_install = true,
+        highlight = true,
+        languages = {
+          env = {
+            install_info = {
+              url = "https://github.com/pnx/tree-sitter-dotenv",
+              revision = "a16f203ba05f8efedc780690cac217c095946c06",
+              queries = "queries",
+            },
+          },
+        },
+      })
+
+      vim.filetype.add({
+        extension = {
+          gotmpl = "gotmpl",
+          ftl = "ftl",
+        },
+        pattern = {
+          [".*/hypr/.*%.conf"] = "hyprlang",
+          [".*%.env$"] = "env",
+          [".*%.env%..*"] = "env",
+        },
+      })
+
+      vim.treesitter.language.register("html", { "gotmpl", "ftl" })
     end,
   }
 end
@@ -557,11 +640,13 @@ local debugger_plugins = debugger()
 
 return {
   lsp(),
+  lua_dev(),
   linter(),
   formatter(),
   snippets(),
   autocomplete(),
-  treesitter(),
+  -- treesitter(),
+  treesitter_manager(),
   debugger_plugins.debugger,
   debugger_plugins.go,
 }

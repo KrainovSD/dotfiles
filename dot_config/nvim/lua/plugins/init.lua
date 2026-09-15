@@ -356,7 +356,6 @@ local function tagbar()
     "stevearc/aerial.nvim",
     opts = {},
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
     },
     config = function()
@@ -756,7 +755,6 @@ local function markdown()
   return {
     "MeanderingProgrammer/render-markdown.nvim",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
     },
     config = function()
