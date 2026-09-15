@@ -91,6 +91,10 @@ local function lsp()
           },
         },
       })
+      vim.lsp.config("angularls", {
+        workspace_required = true,
+      })
+
       vim.lsp.config("html", {
         filetypes = {
           "html",
@@ -158,14 +162,28 @@ local function linter()
       lint.linters.eslint_d.root_dir = find_project_root
       vim.env.PATH = find_project_root() .. "/node_modules/.bin:" .. vim.env.PATH
 
-      -- exec
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave", "TextChanged" }, {
+      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
         callback = function()
           local linters = require("lint").linters_by_ft[vim.bo.filetype]
           if linters ~= nil and linters[1] == "eslint_d" then
             require("lint").try_lint(nil, { cwd = find_project_root() })
           else
             require("lint").try_lint()
+          end
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("TextChanged", {
+        callback = function()
+          local linters = require("lint").linters_by_ft[vim.bo.filetype]
+          if linters == nil then
+            return
+          end
+          local rest = vim.tbl_filter(function(l)
+            return l ~= "eslint_d"
+          end, linters)
+          if #rest > 0 then
+            require("lint").try_lint(rest)
           end
         end,
       })

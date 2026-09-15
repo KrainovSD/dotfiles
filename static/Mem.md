@@ -223,6 +223,7 @@ pactl set-default-sink Name
 - open TTY - `Ctrl Alt F[Number of TTY]`
 - autostart apps locate in `~/.config/autostart`
 - if pacstrap install ended with trouble
+- happ required manual enable `happ` systemd daemon from root and kill from user
 
 ```bash
 # try to change mirror in /etc/pacman.d/mirrorlist to https://mirror.yandex.ru/archlinux/$repo/os/$arch

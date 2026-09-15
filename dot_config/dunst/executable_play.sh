@@ -6,6 +6,9 @@ urgency=$(echo "$5" | tr '[:upper:]' '[:lower:]')
 
 SOUND_DIR="/usr/share/sounds/freedesktop/stereo"
 
+VOLUME=100
+PA_VOLUME=$((VOLUME * 65536 / 100))
+
 RULES=(
     "spotify" "" "" "IGNORE"
     "telegram|discord|whatsapp|signal" "call|звонок" "" "phone-incoming-call.oga"
@@ -42,9 +45,9 @@ sound=""
 
 for ((i = 0; i < ${#RULES[@]}; i += 4)); do
     rule_app="${RULES[i]}"
-    rule_summary="${RULES[i + 1]}"
-    rule_urgency="${RULES[i + 2]}"
-    rule_sound="${RULES[i + 3]}"
+    rule_summary="${RULES[i+1]}"
+    rule_urgency="${RULES[i+2]}"
+    rule_sound="${RULES[i+3]}"
 
     if check_rule "$rule_app" "$rule_summary" "$rule_urgency"; then
         sound="$rule_sound"
@@ -56,8 +59,13 @@ if [[ "$sound" == "IGNORE" ]]; then
     exit 0
 fi
 
+play_sound() {
+    local file="$1"
+    paplay --volume="$PA_VOLUME" "$file" >/dev/null 2>&1 &
+}
+
 if [[ -f "$SOUND_DIR/$sound" ]]; then
-    pw-play "$SOUND_DIR/$sound" >/dev/null 2>&1 &
+    play_sound "$SOUND_DIR/$sound"
 else
-    pw-play "$SOUND_DIR/dialog-information.oga" >/dev/null 2>&1 &
+    play_sound "$SOUND_DIR/dialog-information.oga"
 fi
