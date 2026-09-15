@@ -1,0 +1,6 @@
+[Unit]
+Description=GTK settings.ini sync
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/gtk-ini-sync %i

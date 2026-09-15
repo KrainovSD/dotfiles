@@ -30,6 +30,13 @@ sudo cp -r ~/static/icons/* /usr/share/icons/
 sudo cp -r ~/static/cursors/* /usr/share/icons/
 sudo fc-cache -fv
 
+tar -xf ~/.config/Kvantum/Gruvbox-Dark-Blue.tar.gz -C ~/.config/Kvantum/
+tar -xf ~/.config/Kvantum/Gruvbox-Dark-Green.tar.gz -C ~/.config/Kvantum/
+
+systemctl --user enable --now gtk-ini-sync-gtk3.path
+systemctl --user enable --now gtk-ini-sync-gtk4.path
+systemctl --user start gtk-ini-sync@gtk-3.0.service
+
 colored_echo "init session ..."
 cat <<'EOF' | sudo tee /usr/share/wayland-sessions/hyprland-uwsm.desktop
 [Desktop Entry]

@@ -1,0 +1,10 @@
+[Unit]
+Description=watch for gtk-4.0/settings.ini
+
+[Path]
+PathModified=%h/.config/gtk-4.0/settings.ini
+PathChanged=%h/.config/gtk-4.0/settings.ini
+Unit=gtk-ini-sync@gtk-4.0.service
+
+[Install]
+WantedBy=default.target

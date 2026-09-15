@@ -1,0 +1,140 @@
+#!/bin/bash
+
+set -u
+
+SRC_DIR="${1:-}"
+case "$SRC_DIR" in
+gtk-3.0) DST_DIR="gtk-4.0" ;;
+gtk-4.0) DST_DIR="gtk-3.0" ;;
+*)
+    echo "использование: gtk-ini-sync <gtk-3.0|gtk-4.0>" >&2
+    exit 1
+    ;;
+esac
+
+SRC="$HOME/.config/$SRC_DIR/settings.ini"
+DST="$HOME/.config/$DST_DIR/settings.ini"
+IFACE="org.gnome.desktop.interface"
+SOUND="org.gnome.desktop.sound"
+
+INI_KEYS=(
+    gtk-theme-name gtk-icon-theme-name gtk-font-name gtk-cursor-theme-name gtk-cursor-theme-size
+    gtk-toolbar-style gtk-toolbar-icon-size gtk-button-images gtk-menu-images
+    gtk-enable-event-sounds gtk-enable-input-feedback-sounds
+    gtk-xft-antialias gtk-xft-hinting gtk-xft-hintstyle gtk-xft-rgba
+    gtk-application-prefer-dark-theme
+)
+
+MAP=(
+    "gtk-theme-name:$IFACE:gtk-theme:s"
+    "gtk-icon-theme-name:$IFACE:icon-theme:s"
+    "gtk-font-name:$IFACE:font-name:s"
+    "gtk-cursor-theme-name:$IFACE:cursor-theme:s"
+    "gtk-cursor-theme-size:$IFACE:cursor-size:i"
+    "gtk-toolbar-style:$IFACE:toolbar-style:s"
+    "gtk-toolbar-icon-size:$IFACE:toolbar-icons-size:s"
+    "gtk-enable-event-sounds:$SOUND:event-sounds:b"
+    "gtk-enable-input-feedback-sounds:$SOUND:input-feedback-sounds:b"
+    "gtk-xft-antialias:$IFACE:font-antialiasing:s"
+    "gtk-xft-rgba:$IFACE:font-rgba-order:s"
+    "gtk-application-prefer-dark-theme:$IFACE:color-scheme:s"
+)
+
+ini_get() {
+    sed -n "s/^$1=//p" "$2" 2>/dev/null | head -n1
+}
+
+transform() {
+    case "$1" in
+    gtk-toolbar-style)
+        case "$2" in
+        GTK_TOOLBAR_BOTH_HORIZ) echo "both-horiz" ;;
+        GTK_TOOLBAR_BOTH) echo "both" ;;
+        GTK_TOOLBAR_ICONS) echo "icons" ;;
+        GTK_TOOLBAR_TEXT) echo "text" ;;
+        esac
+        ;;
+    gtk-toolbar-icon-size)
+        case "$2" in
+        GTK_ICON_SIZE_SMALL_TOOLBAR) echo "small" ;;
+        GTK_ICON_SIZE_LARGE_TOOLBAR) echo "large" ;;
+        esac
+        ;;
+    gtk-xft-antialias)
+        [[ "$2" == 1 ]] && echo "grayscale" || echo "none"
+        ;;
+    gtk-xft-rgba)
+        case "$2" in rgb | bgr | vrgb | vbgr | none) echo "$2" ;; esac
+        ;;
+    gtk-application-prefer-dark-theme)
+        [[ "$2" == 1 ]] && echo "prefer-dark" || echo "prefer-light"
+        ;;
+    *)
+        echo "$2"
+        ;;
+    esac
+}
+
+push_gsettings() {
+    local cur v="$4"
+    if [[ "$3" == b ]]; then
+        if [[ "$v" == 1 ]]; then v="true"; else v="false"; fi
+    fi
+    cur="$(gsettings get "$1" "$2" 2>/dev/null | sed "s/^'//; s/'\$//")"
+    [[ -z "$cur" ]] && {
+        echo "пропуск: $1 $2 — нет в схеме"
+        return
+    }
+    [[ "$cur" == "$v" ]] && return
+    if [[ "$3" == s ]]; then
+        gsettings set "$1" "$2" "'$v'"
+    else gsettings set "$1" "$2" "$v"; fi
+    echo "gsettings  $2: '$cur' → '$v'"
+}
+
+[[ -f "$SRC" ]] || {
+    echo "нет источника: $SRC" >&2
+    exit 1
+}
+[[ -f "$DST" ]] || printf '[Settings]\n' >"$DST"
+
+for key in "${INI_KEYS[@]}"; do
+    val="$(ini_get "$key" "$SRC")"
+    [[ -z "$val" ]] && continue
+    dval="$(ini_get "$key" "$DST")"
+    [[ "$dval" == "$val" ]] && continue
+    if grep -q "^$key=" "$DST"; then
+        sed -i "s|^$key=.*|$key=$val|" "$DST"
+    else
+        printf '%s=%s\n' "$key" "$val" >>"$DST"
+    fi
+    echo "ini [$DST_DIR] $key: '${dval:-<нет>}' → '$val'"
+done
+
+for m in "${MAP[@]}"; do
+    IFS=: read -r ikey schema gkey type <<<"$m"
+    val="$(ini_get "$ikey" "$SRC")"
+    [[ -z "$val" ]] && continue
+    gval="$(transform "$ikey" "$val")"
+    if [[ -z "$gval" ]]; then
+        echo "пропуск $ikey: значение '$val' не распознано"
+        continue
+    fi
+    push_gsettings "$schema" "$gkey" "$type" "$gval"
+done
+
+hinting="$(ini_get gtk-xft-hinting "$SRC")"
+if [[ -n "$hinting" ]]; then
+    if [[ "$hinting" == 0 ]]; then
+        gval="none"
+    else
+        case "$(ini_get gtk-xft-hintstyle "$SRC")" in
+        none) gval="none" ;;
+        hintslight) gval="slight" ;;
+        hintmedium) gval="medium" ;;
+        hintfull) gval="full" ;;
+        *) gval="" ;;
+        esac
+    fi
+    [[ -n "$gval" ]] && push_gsettings "$IFACE" font-hinting s "$gval"
+fi
