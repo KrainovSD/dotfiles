@@ -610,18 +610,18 @@ local function debugger()
       "leoluz/nvim-dap-go",
       dependencies = "mfussenegger/nvim-dap",
       config = function()
-        require("dap-go").setup({
-          dap_configurations = {
-            {
-              type = "go",
-              name = "Launch plugin-builder",
-              request = "launch",
-              mode = "debug",
-              program = "${workspaceFolder}/packages/plugin-builder",
-              cwd = "${workspaceFolder}/packages/plugin-builder",
-              args = { "../tests/change-db" },
-            },
-          },
+        require("dap-go").setup({})
+        local vscode_loaded_cwd = {}
+        vim.api.nvim_create_autocmd("FileType", {
+          pattern = { "go" },
+          callback = function()
+            local cwd = vim.fn.getcwd()
+            if vscode_loaded_cwd[cwd] then
+              return
+            end
+            vscode_loaded_cwd[cwd] = true
+            require("dap.ext.vscode").load_launchjs()
+          end,
         })
       end,
     },
