@@ -493,6 +493,10 @@ local function multicursor()
       vim.keymap.set("v", "<C-m>", "<Plug>(VM-Find-Subword-Under)")
       vim.keymap.set("n", "<C-S-j>", "<Plug>(VM-Add-Cursor-Down)")
       vim.keymap.set("n", "<C-S-K>", "<Plug>(VM-Add-Cursor-Up)")
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "qf",
+        command = "nnoremap <buffer> <CR> <CR>",
+      })
     end,
   }
 end

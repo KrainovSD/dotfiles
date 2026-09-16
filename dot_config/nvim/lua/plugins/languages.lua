@@ -529,28 +529,20 @@ local function treesitter()
       --     additional_vim_regex_highlighting = false,
       --   },
       -- })
-      vim.filetype.add({
-        pattern = { [".*/hypr/.*%.conf"] = "hyprlang" },
-      })
+
       vim.filetype.add({
         extension = {
           gotmpl = "gotmpl",
-        },
-      })
-      vim.filetype.add({
-        extension = {
           ftl = "ftl",
         },
-      })
-      vim.filetype.add({
         pattern = {
-          ["^.env"] = "env",
-          [".env"] = "env",
+          [".*/hypr/.*%.conf"] = "hyprlang",
+          [".*%.env$"] = "env",
+          [".*%.env%..*"] = "env",
         },
       })
-      vim.treesitter.language.register("html", "gotmpl")
-      vim.treesitter.language.register("html", "ftl")
-      vim.api.nvim_command("autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>")
+      vim.treesitter.language.register("html", { "gotmpl", "ftl" })
+
       vim.api.nvim_create_autocmd("FileType", {
         callback = function(args)
           local treesitter_plugin = require("nvim-treesitter")
@@ -627,7 +619,7 @@ local function debugger()
               mode = "debug",
               program = "${workspaceFolder}/packages/plugin-builder",
               cwd = "${workspaceFolder}/packages/plugin-builder",
-              args = { "../tests/read-db" },
+              args = { "../tests/change-db" },
             },
           },
         })
