@@ -2,7 +2,7 @@ local opts = { noremap = true, silent = true }
 
 vim.keymap.set("n", "<C-s>", ":w <CR>", opts)
 vim.keymap.set("v", "p", "P", opts)
-vim.keymap.set("i", "jk", "<Esc>", opts)
+-- vim.keymap.set("i", "jk", "<Esc>", opts)
 vim.keymap.set({ "n", "v" }, "J", "4j", opts)
 vim.keymap.set({ "n", "v" }, "K", "4k", opts)
 vim.keymap.set({ "n", "v" }, "H", "4h", opts)
@@ -28,22 +28,12 @@ vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", opts)
 
 vim.cmd([[
 
-" tnoremap <C-h> <C-\\><C-o><C-w>h
-" tnoremap <C-k> <C-\\><C-o><C-w>k
-" tnoremap <C-l> <C-\\><C-o><C-w>l
-" tnoremap <C-j> <C-\\><C-o><C-w>j
-"
-" nnoremap <C-h> <C-w>h
-" nnoremap <C-k> <C-w>k
-" nnoremap <C-l> <C-w>l
-" nnoremap <C-j> <C-w>j
+
 
 " write to other register
 nnoremap c "_c
 vnoremap c "_c
 
-" nnoremap <Space> @q
-nnoremap <C-Space> ␛
-vnoremap <C-Space> ␛
+
 vnoremap <leader>e :!sh<CR>
 ]])

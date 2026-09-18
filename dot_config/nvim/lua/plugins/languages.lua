@@ -56,7 +56,6 @@ local function lsp()
         "delve",
       }
 
-      -- Функция для установки всех инструментов
       local function ensure_tools_installed()
         for _, tool in ipairs(ensure_installed) do
           local p = mason_registry.get_package(tool)
@@ -76,6 +75,16 @@ local function lsp()
         },
         signs = true,
         underline = true,
+      })
+
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client then
+            client.server_capabilities.semanticTokensProvider = nil
+          end
+        end,
+        desc = "Disable LSP semantic tokens (use treesitter highlighting only)",
       })
       vim.lsp.config("ts_ls", {
         filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
@@ -122,7 +131,7 @@ local function lsp()
       vim.keymap.set("n", "I", vim.lsp.buf.hover)
       vim.keymap.set("n", "<leader>gn", vim.lsp.buf.rename)
       vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
-      vim.keymap.set("n", "<leader>gpe", vim.diagnostic.goto_prev)
+      vim.keymap.set("n", "<leader>gNe", vim.diagnostic.goto_prev)
       vim.keymap.set("n", "<leader>gne", vim.diagnostic.goto_next)
       vim.keymap.set("n", "<leader>fe", vim.diagnostic.setloclist)
       vim.keymap.set("n", "<leader>fea", vim.diagnostic.setqflist)
@@ -169,6 +178,15 @@ local function linter()
         html = { "eslint_d" },
         gotmpl = { "eslint_d" },
         dockerfile = { "hadolint" },
+      }
+      lint.linters.selene.args = {
+        "--display-style",
+        "json",
+        function()
+          local root = vim.fs.root(0, { "selene.toml" })
+          return "--config=" .. (root and (root .. "/selene.toml") or "selene.toml")
+        end,
+        "-",
       }
       -- eslint_d
       local function find_project_root()
@@ -484,86 +502,83 @@ local function treesitter_manager()
   }
 end
 
-local function treesitter()
-  return {
-    "nvim-treesitter/nvim-treesitter",
-    event = { "BufReadPost", "BufNewFile" },
-    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
-    build = ":TSUpdate",
-    lazy = false,
-    branch = "main",
-    commit = "4916d6592ede8c07973490d9322f187e07dfefac",
-    config = function()
-      local ensure_installed = {
-        "bash",
-        "c",
-        "html",
-        "vim",
-        "lua",
-        "rust",
-        "python",
-        "yaml",
-        "vimdoc",
-        "vue",
-        "svelte",
-        "javascript",
-        "typescript",
-        "markdown",
-        "gleam",
-        "hyprlang",
-        "helm",
-        "gotmpl",
-        "go",
-        "css",
-        "scss",
-      }
-      require("nvim-treesitter").setup()
-      require("nvim-treesitter").install(ensure_installed)
-      -- only for master branch
-      -- require("nvim-treesitter.configs").setup({
-      --   ensure_installed = ensure_installed,
-      --   sync_install = true,
-      --   auto_install = true,
-      --   highlight = {
-      --     enable = true,
-      --     additional_vim_regex_highlighting = false,
-      --   },
-      -- })
-
-      vim.filetype.add({
-        extension = {
-          gotmpl = "gotmpl",
-          ftl = "ftl",
-        },
-        pattern = {
-          [".*/hypr/.*%.conf"] = "hyprlang",
-          [".*%.env$"] = "env",
-          [".*%.env%..*"] = "env",
-        },
-      })
-      vim.treesitter.language.register("html", { "gotmpl", "ftl" })
-
-      vim.api.nvim_create_autocmd("FileType", {
-        callback = function(args)
-          local treesitter_plugin = require("nvim-treesitter")
-          local lang = vim.treesitter.language.get_lang(args.match)
-          if vim.list_contains(treesitter_plugin.get_available(), lang) then
-            if not vim.list_contains(treesitter_plugin.get_installed(), lang) then
-              treesitter_plugin.install(lang):wait()
-            end
-
-            vim.treesitter.start(args.buf)
-          end
-        end,
-        desc = "enable nvim-treesitter and install parser if not installed",
-      })
-    end,
-  }
-end
+-- local function treesitter()
+--   return {
+--     "nvim-treesitter/nvim-treesitter",
+--     event = { "BufReadPost", "BufNewFile" },
+--     cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
+--     build = ":TSUpdate",
+--     lazy = false,
+--     branch = "main",
+--     commit = "4916d6592ede8c07973490d9322f187e07dfefac",
+--     config = function()
+--       local ensure_installed = {
+--         "bash",
+--         "c",
+--         "html",
+--         "vim",
+--         "lua",
+--         "rust",
+--         "python",
+--         "yaml",
+--         "vimdoc",
+--         "vue",
+--         "svelte",
+--         "javascript",
+--         "typescript",
+--         "markdown",
+--         "gleam",
+--         "hyprlang",
+--         "helm",
+--         "gotmpl",
+--         "go",
+--         "css",
+--         "scss",
+--       }
+--       require("nvim-treesitter").setup()
+--       require("nvim-treesitter").install(ensure_installed)
+--       -- only for master branch
+--       -- require("nvim-treesitter.configs").setup({
+--       --   ensure_installed = ensure_installed,
+--       --   sync_install = true,
+--       --   auto_install = true,
+--       --   highlight = {
+--       --     enable = true,
+--       --     additional_vim_regex_highlighting = false,
+--       --   },
+--       -- })
+--       vim.filetype.add({
+--         extension = {
+--           gotmpl = "gotmpl",
+--           ftl = "ftl",
+--         },
+--         pattern = {
+--           [".*/hypr/.*%.conf"] = "hyprlang",
+--           [".*%.env$"] = "env",
+--           [".*%.env%..*"] = "env",
+--         },
+--       })
+--       vim.treesitter.language.register("html", { "gotmpl", "ftl" })
+--       vim.api.nvim_create_autocmd("FileType", {
+--         callback = function(args)
+--           local treesitter_plugin = require("nvim-treesitter")
+--           local lang = vim.treesitter.language.get_lang(args.match)
+--           if vim.list_contains(treesitter_plugin.get_available(), lang) then
+--             if not vim.list_contains(treesitter_plugin.get_installed(), lang) then
+--               treesitter_plugin.install(lang):wait()
+--             end
+--             vim.treesitter.start(args.buf)
+--           end
+--         end,
+--         desc = "enable nvim-treesitter and install parser if not installed",
+--       })
+--     end,
+--   }
+-- end
 
 local function debugger()
   return {
-    debugger = {
+    {
       {
         "rcarriga/nvim-dap-ui",
         dependencies = {
@@ -606,7 +621,7 @@ local function debugger()
         end,
       },
     },
-    go = {
+    {
       "leoluz/nvim-dap-go",
       dependencies = "mfussenegger/nvim-dap",
       config = function()
@@ -628,8 +643,6 @@ local function debugger()
   }
 end
 
-local debugger_plugins = debugger()
-
 return {
   lsp(),
   lua_dev(),
@@ -639,6 +652,5 @@ return {
   autocomplete(),
   -- treesitter(),
   treesitter_manager(),
-  debugger_plugins.debugger,
-  debugger_plugins.go,
+  debugger(),
 }

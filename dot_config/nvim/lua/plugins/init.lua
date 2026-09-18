@@ -1,24 +1,32 @@
 local function autoclose()
   return {
-    "m4xshen/autoclose.nvim",
-    config = function()
-      require("autoclose").setup({
-        keys = {
-          ["("] = { escape = false, close = true, pair = "()" },
-          ["["] = { escape = false, close = true, pair = "[]" },
-          ["{"] = { escape = false, close = true, pair = "{}" },
+    -- {
+    --   "m4xshen/autoclose.nvim",
+    --   config = function()
+    --     require("autoclose").setup({
+    --       keys = {
+    --         ["("] = { escape = false, close = true, pair = "()" },
+    --         ["["] = { escape = false, close = true, pair = "[]" },
+    --         ["{"] = { escape = false, close = true, pair = "{}" },
 
-          [">"] = { escape = true, close = false, pair = "<>" },
-          [")"] = { escape = true, close = false, pair = "()" },
-          ["]"] = { escape = true, close = false, pair = "[]" },
-          ["}"] = { escape = true, close = false, pair = "{}" },
+    --         [">"] = { escape = true, close = false, pair = "<>" },
+    --         [")"] = { escape = true, close = false, pair = "()" },
+    --         ["]"] = { escape = true, close = false, pair = "[]" },
+    --         ["}"] = { escape = true, close = false, pair = "{}" },
 
-          ['"'] = { escape = true, close = true, pair = '""' },
-          ["'"] = { escape = true, close = true, pair = "''" },
-          ["`"] = { escape = true, close = true, pair = "``" },
-        },
-      })
-    end,
+    --         ['"'] = { escape = true, close = true, pair = '""' },
+    --         ["'"] = { escape = true, close = true, pair = "''" },
+    --         ["`"] = { escape = true, close = true, pair = "``" },
+    --       },
+    --     })
+    --   end,
+    -- },
+    {
+      "windwp/nvim-autopairs",
+      event = "InsertEnter",
+      config = true,
+      opts = {},
+    },
   }
 end
 
@@ -106,7 +114,7 @@ end
 -- local function file_info_incline()
 --   return {
 --     -- hierarchy symantic navigation for line plugin
---     navic = {
+--     {
 --       "SmiteshP/nvim-navic",
 --       lazy = true,
 --       init = function()
@@ -132,7 +140,7 @@ end
 --       end,
 --     },
 --     -- line info in first row
---     incline = {
+--     {
 --       "b0o/incline.nvim",
 --       config = function()
 --         require("incline").setup({
@@ -401,31 +409,19 @@ end
 
 local function auto_comment()
   return {
-    tsx = {
+    {
       "JoosepAlviste/nvim-ts-context-commentstring",
       config = function()
         require("ts_context_commentstring").setup({ enable_autocmd = false })
       end,
     },
-
-    core = {
-      "numToStr/Comment.nvim",
-      dependencies = {
-        "JoosepAlviste/nvim-ts-context-commentstring",
-      },
-      opts = {
-        -- pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
-        pre_hook = function(ctx)
-          return require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook()(ctx)
-        end,
-      },
-    },
+    { "tpope/vim-commentary" },
   }
 end
 
 local function git()
   return {
-    signs = {
+    {
       "lewis6991/gitsigns.nvim",
       config = function()
         require("gitsigns").setup({
@@ -448,7 +444,7 @@ local function git()
       end,
     },
 
-    diff = {
+    {
       "sindrets/diffview.nvim",
       dependencies = {
         "nvim-lua/plenary.nvim",
@@ -471,7 +467,7 @@ local function git()
       end,
     },
 
-    git = {
+    {
       "tpope/vim-fugitive",
       config = function()
         vim.keymap.set("n", "<leader>G", function()
@@ -513,7 +509,7 @@ end
 
 local function tabs()
   return {
-    tabs = {
+    {
       "akinsho/bufferline.nvim",
       version = "*",
       dependencies = "nvim-tree/nvim-web-devicons",
@@ -744,7 +740,7 @@ local function tabs()
         end
       end,
     },
-    close_tabs = {
+    {
       "famiu/bufdelete.nvim",
       config = function()
         vim.keymap.set("n", "<leader>q", function()
@@ -829,14 +825,13 @@ end
 
 local function telescope()
   return {
-    trouble = {
+    {
       "folke/trouble.nvim",
       config = function()
         require("trouble").setup({})
       end,
     },
-
-    telescope = {
+    {
       "nvim-telescope/telescope.nvim",
       dependencies = {
         { "nvim-lua/plenary.nvim" },
@@ -887,6 +882,7 @@ local function telescope()
         vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
         vim.keymap.set("n", "<leader>fc", builtin.commands, { desc = "Telescope help commands" })
         vim.keymap.set("n", "<leader>fq", builtin.quickfix, { desc = "Telescope help quickfix" })
+        vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Telescope keymaps" })
         -- telescope.load_extension("aerial")
         -- vim.keymap.set("n", "<leader>ft", telescope.extensions.aerial.aerial, { desc = "Telescope help language tags" })
       end,
@@ -1102,19 +1098,146 @@ end
 --   }
 -- end
 
--- local file_info_plugins = file_info_incline()
-local auto_comment_plugins = auto_comment()
-local git_plugins = git()
-local tabs_plugins = tabs()
-local telescope_plugins = telescope()
+function better_escape()
+  return {
+    "nvim-zh/better-escape.vim",
+    event = "VeryLazy",
+    init = function()
+      vim.g.better_escape_interval = 200
+      vim.g.better_escape_shortcut = { "jk" }
+    end,
+  }
+end
+
+function which_keys()
+  return {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      triggers = {},
+      expand = 99,
+      filter = function(mapping)
+        return mapping.desc and mapping.desc ~= ""
+      end,
+      plugins = {
+        marks = false,
+        registers = false,
+        spelling = { enabled = false },
+        presets = {
+          operators = false,
+          motions = false,
+          text_objects = false,
+          windows = false,
+          nav = false,
+          z = false,
+          g = false,
+        },
+      },
+      spec = {
+        { "<leader>sp", desc = "split screen" },
+        { "<leader>ss", desc = "toggle spell check" },
+        { "<leader>sh", desc = "toggle terminal" },
+        { "<leader>w", group = "word" },
+        { "<leader>wa", desc = "mark word as good" },
+        { "<leader>wr", desc = "mark word as bad" },
+        { "<leader>m", group = "move" },
+        { "<leader>mh", desc = "move buffer left" },
+        { "<leader>ml", desc = "move buffer right" },
+        { "<leader>mj", desc = "move buffer down" },
+        { "<leader>mk", desc = "move buffer up" },
+        { "<leader>mx", desc = "swap windows" },
+        { "<leader>md", desc = "toggle markdown render" },
+
+        { "<leader>d", group = "diff" },
+        { "<leader>dpl", desc = "inline preview diff" },
+        { "<leader>dpb", desc = "check buffer diff" },
+        { "<leader>dr", desc = "reset diff" },
+        { "<leader>dn", desc = "next diff" },
+        { "<leader>dN", desc = "prev diff" },
+        { "<leader>do", desc = "open diff file menu" },
+        { "<leader>dh", desc = "open diff history menu" },
+        { "<leader>dc", desc = "close diff menu" },
+        { "<leader>G", desc = "open git menu" },
+
+        { "<leader>bp", desc = "pin buffer tab" },
+        { "<leader>bq", desc = "close all buffers except current" },
+        { "<leader>bc", desc = "pick buffer" },
+        { "<leader>q", desc = "close buffer" },
+
+        { "<leader>at", desc = "tag navigation modal bar" },
+        { "<leader>as", desc = "add surround" },
+        { "<leader>tr", desc = "toggle file tree" },
+
+        { "<leader>f", group = "find" },
+        { "<leader>ff", desc = "find files name" },
+        { "<leader>fg", desc = "find files content" },
+        { "<leader>fb", desc = "find files name in opened buffers" },
+        { "<leader>fq", desc = "find quickfix" },
+        { "<leader>fk", desc = "find keymaps by description" },
+        { "<leader>fh", desc = "find help tags" },
+        { "<leader>fc", desc = "find commands" },
+        { "<leader>ft", desc = "find tags" },
+        { "<leader>fe", desc = "find current buffer errors" },
+        { "<leader>fea", desc = "find all errors" },
+
+        { "<leader>g", group = "lsp" },
+        { "<leader>gd", desc = "go to definition" },
+        { "<leader>gb", desc = "back from last definition" },
+        { "<leader>gf", desc = "forward to last definition" },
+        { "<leader>gr", desc = "list of references" },
+        { "<leader>gi", desc = "go to implementation" },
+        { "<leader>ca", desc = "code action" },
+        { "<leader>gn", desc = "rename variable in project" },
+        { "<leader>gne", desc = "goto next error" },
+        { "<leader>gNe", desc = "goto prev error" },
+        { "<leader>e", desc = "error description" },
+
+        { "<leader>x", group = "debug" },
+        { "<leader>xs", desc = "start/continue debugging" },
+        { "<leader>xi", desc = "step into" },
+        { "<leader>xo", desc = "step over" },
+        { "<leader>xt", desc = "step out" },
+        { "<leader>xu", desc = "toggle debug UI" },
+        { "<leader>xc", desc = "stop debugging" },
+        { "<leader>xh", desc = "hover variable" },
+        { "<leader>xe", desc = "eval expression" },
+        { "<leader>b", desc = "toggle breakpoint" },
+
+        { "<leader>n", group = "npm" },
+        { "<leader>nt", desc = "toggle package info" },
+        { "<leader>nu", desc = "change package version" },
+        { "<leader>nd", desc = "delete package" },
+        { "<leader>ni", desc = "install package" },
+
+        { "z", group = "fold" },
+        { "zr", desc = "close all depth except first" },
+        { "zo", desc = "open all" },
+        { "zc", desc = "close all" },
+
+        { "gcc", desc = "toggle comment" },
+        { "gc", desc = "toggle comment (visual)" },
+        { "gbc", desc = "toggle block comment" },
+        { "gb", desc = "toggle block comment (visual)" },
+      },
+    },
+    keys = {
+      {
+        "<leader>?",
+        function()
+          require("which-key").show({ global = true })
+        end,
+        desc = "All Keymaps (which-key)",
+      },
+    },
+  }
+end
 
 return {
   autoclose(),
   clipboard_in_ssh(),
   ts_autotag(),
   surround(),
-  -- file_info_plugins.navic,
-  -- file_info_plugins.incline,
+  -- file_info(),
   fold_ufo(),
   status_line(),
   todo_comments(),
@@ -1122,23 +1245,20 @@ return {
   terminal(),
   tagbar(),
   smart_splits(),
-  auto_comment_plugins.tsx,
-  auto_comment_plugins.core,
-  git_plugins.signs,
-  git_plugins.diff,
-  git_plugins.git,
+  auto_comment(),
+  git(),
   multicursor(),
   sessions(),
-  tabs_plugins.tabs,
-  tabs_plugins.close_tabs,
+  tabs(),
   markdown(),
   universal_snacks(),
   file_tree(),
-  telescope_plugins.trouble,
-  telescope_plugins.telescope,
+  telescope(),
   npm(),
   flash_move(),
   indent_blankline(),
   treesitter_context(),
   -- noice_ui(),
+  better_escape(),
+  which_keys(),
 }

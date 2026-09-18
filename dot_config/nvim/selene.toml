@@ -1,6 +1,4 @@
-[config]
-std="lua54"
+std = "/home/krainov/.config/nvim/nvim_std"
 
-[style]
-mixed_table = "off"
-
+[lints]
+mixed_table = "allow"
