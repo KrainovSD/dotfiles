@@ -90,23 +90,20 @@ end
 local function surround()
   return {
     "kylechui/nvim-surround",
-    version = "^3.0.0",
+    version = "^4.0.0",
     event = "VeryLazy",
+    init = function()
+      vim.g.nvim_surround_no_normal_mappings = true
+      vim.g.nvim_surround_no_visual_mappings = true
+      vim.g.nvim_surround_no_insert_mappings = true
+    end,
     config = function()
-      require("nvim-surround").setup({
-        keymaps = {
-          insert = false,
-          insert_line = false,
-          normal = "<leader>as",
-          normal_cur = false,
-          normal_line = false,
-          normal_cur_line = false,
-          visual = "as",
-          visual_line = false,
-          delete = "ds",
-          change = "cs",
-        },
-      })
+      require("nvim-surround").setup()
+      vim.keymap.set("n", "<leader>as", "<Plug>(nvim-surround-normal)")
+      vim.keymap.set("n", "ds", "<Plug>(nvim-surround-delete)")
+      vim.keymap.set("n", "cs", "<Plug>(nvim-surround-change)")
+      vim.keymap.set("n", "cS", "<Plug>(nvim-surround-change-line)")
+      vim.keymap.set("x", "as", "<Plug>(nvim-surround-visual)")
     end,
   }
 end
@@ -379,10 +376,21 @@ end
 local function smart_splits()
   return {
     "mrjones2014/smart-splits.nvim",
+    dependencies = {
+      {
+        "smart-splits-nvim/backend-zellij-lua",
+        main = "smart-splits-backend-zellij-lua",
+        opts = {
+          move_cursor = {
+            pane_or_tab = true,
+          },
+        },
+      },
+    },
     config = function()
       local sp = require("smart-splits")
       sp.setup({
-        zellij_move_focus_or_tab = true,
+        mux = { backend = "smart-splits-backend-zellij-lua" },
       })
       vim.keymap.set({ "n", "t" }, "<A-Left>", sp.resize_left)
       vim.keymap.set({ "n", "t" }, "<A-Right>", sp.resize_right)
@@ -1110,15 +1118,101 @@ function better_escape()
 end
 
 function which_keys()
+  local wk_spec = {
+    { "<leader>sp", desc = "split screen" },
+    { "<leader>ss", desc = "toggle spell check" },
+    { "<leader>sh", desc = "toggle terminal" },
+    { "<leader>w", group = "word" },
+    { "<leader>wa", desc = "mark word as good" },
+    { "<leader>wr", desc = "mark word as bad" },
+    { "<leader>m", group = "move" },
+    { "<leader>mh", desc = "move buffer left" },
+    { "<leader>ml", desc = "move buffer right" },
+    { "<leader>mj", desc = "move buffer down" },
+    { "<leader>mk", desc = "move buffer up" },
+    { "<leader>mx", desc = "swap windows" },
+    { "<leader>md", desc = "toggle markdown render" },
+
+    { "<leader>d", group = "diff" },
+    { "<leader>dpl", desc = "inline preview diff" },
+    { "<leader>dpb", desc = "check buffer diff" },
+    { "<leader>dr", desc = "reset diff" },
+    { "<leader>dn", desc = "next diff" },
+    { "<leader>dN", desc = "prev diff" },
+    { "<leader>do", desc = "open diff file menu" },
+    { "<leader>dh", desc = "open diff history menu" },
+    { "<leader>dc", desc = "close diff menu" },
+    { "<leader>G", desc = "open git menu" },
+
+    { "<leader>bp", desc = "pin buffer tab" },
+    { "<leader>bq", desc = "close all buffers except current" },
+    { "<leader>bc", desc = "pick buffer" },
+    { "<leader>q", desc = "close buffer" },
+
+    { "<leader>at", desc = "tag navigation modal bar" },
+    { "<leader>as", desc = "add surround" },
+    { "<leader>tr", desc = "toggle file tree" },
+
+    { "<leader>f", group = "find" },
+    { "<leader>ff", desc = "find files name" },
+    { "<leader>fg", desc = "find files content" },
+    { "<leader>fb", desc = "find files name in opened buffers" },
+    { "<leader>fq", desc = "find quickfix" },
+    { "<leader>fk", desc = "find keymaps by description" },
+    { "<leader>fh", desc = "find help tags" },
+    { "<leader>fc", desc = "find commands" },
+    { "<leader>ft", desc = "find tags" },
+    { "<leader>fe", desc = "find current buffer errors" },
+    { "<leader>fea", desc = "find all errors" },
+
+    { "<leader>g", group = "lsp" },
+    { "<leader>gd", desc = "go to definition" },
+    { "<leader>gb", desc = "back from last definition" },
+    { "<leader>gf", desc = "forward to last definition" },
+    { "<leader>gr", desc = "list of references" },
+    { "<leader>gi", desc = "go to implementation" },
+    { "<leader>ca", desc = "code action" },
+    { "<leader>gn", desc = "rename variable in project" },
+    { "<leader>gne", desc = "goto next error" },
+    { "<leader>gNe", desc = "goto prev error" },
+    { "<leader>e", desc = "error description" },
+
+    { "<leader>x", group = "debugger" },
+    { "<leader>xs", desc = "start/continue debugging" },
+    { "<leader>xi", desc = "step into while debugging" },
+    { "<leader>xo", desc = "step over while debugging" },
+    { "<leader>xt", desc = "step out while debugging" },
+    { "<leader>xu", desc = "toggle debug UI" },
+    { "<leader>xc", desc = "stop debugging" },
+    { "<leader>xh", desc = "hover variable debug info" },
+    { "<leader>xe", desc = "eval expression while debugging" },
+    { "<leader>b", desc = "toggle debugger breakpoint" },
+
+    { "<leader>n", group = "npm" },
+    { "<leader>nt", desc = "toggle package info" },
+    { "<leader>nu", desc = "change package version" },
+    { "<leader>nd", desc = "delete package" },
+    { "<leader>ni", desc = "install package" },
+
+    { "z", group = "fold" },
+    { "zr", desc = "close all fold depth except first" },
+    { "zo", desc = "open all fold" },
+    { "zc", desc = "close all fold" },
+
+    { "gcc", desc = "toggle comment" },
+    { "gc", desc = "toggle comment (visual)" },
+    { "gbc", desc = "toggle block comment" },
+    { "gb", desc = "toggle block comment (visual)" },
+
+    { "<leader>?", desc = "show this popup" },
+  }
+
   return {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {
       triggers = {},
-      expand = 99,
-      filter = function(mapping)
-        return mapping.desc and mapping.desc ~= ""
-      end,
+      expand = 0,
       plugins = {
         marks = false,
         registers = false,
@@ -1133,98 +1227,13 @@ function which_keys()
           g = false,
         },
       },
-      spec = {
-        { "<leader>sp", desc = "split screen" },
-        { "<leader>ss", desc = "toggle spell check" },
-        { "<leader>sh", desc = "toggle terminal" },
-        { "<leader>w", group = "word" },
-        { "<leader>wa", desc = "mark word as good" },
-        { "<leader>wr", desc = "mark word as bad" },
-        { "<leader>m", group = "move" },
-        { "<leader>mh", desc = "move buffer left" },
-        { "<leader>ml", desc = "move buffer right" },
-        { "<leader>mj", desc = "move buffer down" },
-        { "<leader>mk", desc = "move buffer up" },
-        { "<leader>mx", desc = "swap windows" },
-        { "<leader>md", desc = "toggle markdown render" },
-
-        { "<leader>d", group = "diff" },
-        { "<leader>dpl", desc = "inline preview diff" },
-        { "<leader>dpb", desc = "check buffer diff" },
-        { "<leader>dr", desc = "reset diff" },
-        { "<leader>dn", desc = "next diff" },
-        { "<leader>dN", desc = "prev diff" },
-        { "<leader>do", desc = "open diff file menu" },
-        { "<leader>dh", desc = "open diff history menu" },
-        { "<leader>dc", desc = "close diff menu" },
-        { "<leader>G", desc = "open git menu" },
-
-        { "<leader>bp", desc = "pin buffer tab" },
-        { "<leader>bq", desc = "close all buffers except current" },
-        { "<leader>bc", desc = "pick buffer" },
-        { "<leader>q", desc = "close buffer" },
-
-        { "<leader>at", desc = "tag navigation modal bar" },
-        { "<leader>as", desc = "add surround" },
-        { "<leader>tr", desc = "toggle file tree" },
-
-        { "<leader>f", group = "find" },
-        { "<leader>ff", desc = "find files name" },
-        { "<leader>fg", desc = "find files content" },
-        { "<leader>fb", desc = "find files name in opened buffers" },
-        { "<leader>fq", desc = "find quickfix" },
-        { "<leader>fk", desc = "find keymaps by description" },
-        { "<leader>fh", desc = "find help tags" },
-        { "<leader>fc", desc = "find commands" },
-        { "<leader>ft", desc = "find tags" },
-        { "<leader>fe", desc = "find current buffer errors" },
-        { "<leader>fea", desc = "find all errors" },
-
-        { "<leader>g", group = "lsp" },
-        { "<leader>gd", desc = "go to definition" },
-        { "<leader>gb", desc = "back from last definition" },
-        { "<leader>gf", desc = "forward to last definition" },
-        { "<leader>gr", desc = "list of references" },
-        { "<leader>gi", desc = "go to implementation" },
-        { "<leader>ca", desc = "code action" },
-        { "<leader>gn", desc = "rename variable in project" },
-        { "<leader>gne", desc = "goto next error" },
-        { "<leader>gNe", desc = "goto prev error" },
-        { "<leader>e", desc = "error description" },
-
-        { "<leader>x", group = "debug" },
-        { "<leader>xs", desc = "start/continue debugging" },
-        { "<leader>xi", desc = "step into" },
-        { "<leader>xo", desc = "step over" },
-        { "<leader>xt", desc = "step out" },
-        { "<leader>xu", desc = "toggle debug UI" },
-        { "<leader>xc", desc = "stop debugging" },
-        { "<leader>xh", desc = "hover variable" },
-        { "<leader>xe", desc = "eval expression" },
-        { "<leader>b", desc = "toggle breakpoint" },
-
-        { "<leader>n", group = "npm" },
-        { "<leader>nt", desc = "toggle package info" },
-        { "<leader>nu", desc = "change package version" },
-        { "<leader>nd", desc = "delete package" },
-        { "<leader>ni", desc = "install package" },
-
-        { "z", group = "fold" },
-        { "zr", desc = "close all depth except first" },
-        { "zo", desc = "open all" },
-        { "zc", desc = "close all" },
-
-        { "gcc", desc = "toggle comment" },
-        { "gc", desc = "toggle comment (visual)" },
-        { "gbc", desc = "toggle block comment" },
-        { "gb", desc = "toggle block comment (visual)" },
-      },
+      spec = wk_spec,
     },
     keys = {
       {
         "<leader>?",
         function()
-          require("which-key").show({ global = true })
+          require("which-key").show({ global = false, expand = false })
         end,
         desc = "All Keymaps (which-key)",
       },
