@@ -43,7 +43,8 @@
         	"custom/left_div#8",
 		"battery",
 		"custom/left_inv#2",
-		"custom/notifications"
+		"custom/notifications",
+		"custom/recorder"
 	],
 
 	"layer": "top",

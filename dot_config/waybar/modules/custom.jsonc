@@ -7,7 +7,7 @@
 
   "group/powermenu": {
     "orientation": "horizontal",
-    "modules": ["custom/left_div#5", "custom/distro", "custom/right_div#2"]
+    "modules": ["custom/left_div#5", "custom/distro", "custom/right_div#2"],
   },
 
   // left dividers
@@ -85,7 +85,7 @@
     "return-type": "json",
     "format": "{}",
     "on-click": "~/.config/waybar/scripts/notifications.sh list",
-    "interval": 5
+    "interval": 5,
   },
 
   "custom/system_update": {
@@ -96,6 +96,15 @@
     "min-length": 2,
     "max-length": 2,
     "on-click": "kitty -e ~/.config/waybar/scripts/system-update.sh",
+  },
+
+  "custom/recorder": {
+    "exec": "~/.config/waybar/scripts/recorder.sh",
+    "exec-if": "pgrep -x wf-recorder",
+    "return-type": "json",
+    "format": "{}",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/recorder.sh stop",
   },
 
   "group/user": {

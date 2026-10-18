@@ -61,3 +61,27 @@
 #custom-notifications.empty {
 	color: alpha(@main-fg, 0.45);
 }
+
+/*----------------
+    screen recorder
+----------------*/
+
+#custom-recorder {
+	border-radius: 16px;
+	padding: 0 19px 0 16px;
+	color: @red;
+	font-weight: bold;
+}
+#custom-recorder:hover {
+	background-color: @hover-bg;
+}
+
+#custom-recorder.recording {
+	animation: recorder-blink 1s ease-in-out infinite alternate;
+}
+
+@keyframes recorder-blink {
+	to {
+		color: alpha(@red, 0.4);
+	}
+}

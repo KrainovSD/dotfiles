@@ -223,7 +223,8 @@ hl.bind(
 )
 hl.bind(
 	mainMod .. " + Print",
-	hl.dsp.exec_cmd([[uwsm app -- wf-recorder -g "$(slurp)" -f ~/screen/record_$(date +'%Y%m%d_%H%M%S').mp4]])
+	-- hl.dsp.exec_cmd([[uwsm app -- wf-recorder -g "$(slurp)" -f ~/screen/record_$(date +'%Y%m%d_%H%M%S').mp4]])
+	hl.dsp.exec_cmd([[uwsm app -- wf-recorder - -f ~/screen/record_$(date +'%Y%m%d_%H%M%S').mp4]])
 )
 hl.bind("SUPER + SHIFT + Print", hl.dsp.exec_cmd("killall -INT wf-recorder"))
 
